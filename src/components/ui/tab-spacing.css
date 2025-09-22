@@ -1,0 +1,55 @@
+.tab-container {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-container .tab-list {
+  display: flex;
+  overflow-x: auto;
+  margin-bottom: -1px;
+}
+
+.tab-container .tab-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  border-bottom-width: 2px;
+  transition: all 0.2s;
+}
+
+.tab-container .tab-item.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.tab-container .tab-item:not(.active) {
+  color: #6b7280;
+  border-bottom-color: transparent;
+}
+
+.tab-container .tab-item:not(.active):hover {
+  color: #374151;
+  border-bottom-color: #d1d5db;
+}
+
+.tab-content {
+  padding-top: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .tab-container {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .tab-container .tab-item {
+    padding: 0.5rem 0.75rem;
+  }
+}

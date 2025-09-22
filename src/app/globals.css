@@ -1,0 +1,2279 @@
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Exo+2:ital,wght@0,100..900;1,100..900&family=Inconsolata:wght@200..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../components/ui/radio-tabs.css";
+@import "../styles/modern-dashboard.css";
+
+/* Custom scrollbar styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+.scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  
+  /* Professional Healthcare Theme - Blue & Gray */
+  --healthcare-primary: #1e40af;     /* Professional Blue */
+  --healthcare-primary-light: #3b82f6; /* Light Blue */
+  --healthcare-primary-dark: #1e3a8a;  /* Dark Blue */
+  --healthcare-secondary: #374151;    /* Professional Gray */
+  --healthcare-secondary-light: #6b7280; /* Light Gray */
+  --healthcare-secondary-dark: #111827;  /* Dark Gray */
+  --healthcare-accent: #f8fafc;       /* Very Light Gray/White */
+  --healthcare-muted: #f1f5f9;        /* Subtle Gray Background */
+  
+  /* Updated CSS Variables for Healthcare Theme */
+  --card: #ffffff;
+  --card-foreground: var(--healthcare-secondary);
+  --popover: #ffffff;
+  --popover-foreground: var(--healthcare-secondary);
+  --primary: var(--healthcare-primary);
+  --primary-foreground: #ffffff;
+  --secondary: var(--healthcare-muted);
+  --secondary-foreground: var(--healthcare-secondary);
+  --muted: var(--healthcare-muted);
+  --muted-foreground: var(--healthcare-secondary-light);
+  --accent: var(--healthcare-accent);
+  --accent-foreground: var(--healthcare-secondary);
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --input-background: #ffffff;
+  --switch-background: #e2e8f0;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: var(--healthcare-primary-light);
+  
+  /* Professional Chart Colors - Blue & Gray Variations */
+  --chart-1: var(--healthcare-primary);
+  --chart-2: var(--healthcare-primary-light);
+  --chart-3: var(--healthcare-secondary);
+  --chart-4: var(--healthcare-secondary-light);
+  --chart-5: #94a3b8;
+  
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: var(--healthcare-secondary);
+  --sidebar-primary: var(--healthcare-primary);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--healthcare-muted);
+  --sidebar-accent-foreground: var(--healthcare-secondary);
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: var(--healthcare-primary-light);
+
+  /* Power BI Color Palette */
+  --powerbi-blue: #0078d4;
+  --powerbi-light-blue: #00bcf2;
+  --powerbi-purple: #8764b8;
+  --powerbi-dark-purple: #881798;
+  --powerbi-pink: #b146c2;
+  --powerbi-green: #107c10;
+  --powerbi-orange: #ff8c00;
+  --powerbi-red: #d13438;
+  --powerbi-yellow: #ffb900;
+  --powerbi-teal: #00ad56;
+
+  /* Healthcare-specific colors */
+  --healthcare-emergency: #d13438;
+  --healthcare-warning: #ff8c00;
+  --healthcare-success: #107c10;
+  --healthcare-info: #0078d4;
+  --healthcare-neutral: #6c757d;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.13 0.028 261.692);
+}
+
+.dark {
+  --background: oklch(0.13 0.028 261.692);
+  --foreground: oklch(0.985 0.002 247.839);
+  --card: oklch(0.21 0.034 264.665);
+  --card-foreground: oklch(0.985 0.002 247.839);
+  --popover: oklch(0.21 0.034 264.665);
+  --popover-foreground: oklch(0.985 0.002 247.839);
+  --primary: oklch(0.928 0.006 264.531);
+  --primary-foreground: oklch(0.21 0.034 264.665);
+  --secondary: oklch(0.278 0.033 256.848);
+  --secondary-foreground: oklch(0.985 0.002 247.839);
+  --muted: oklch(0.278 0.033 256.848);
+  --muted-foreground: oklch(0.707 0.022 261.325);
+  --accent: oklch(0.278 0.033 256.848);
+  --accent-foreground: oklch(0.985 0.002 247.839);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: #ffffff;
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.034 264.665);
+  --sidebar-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-accent: oklch(0.278 0.033 256.848);
+  --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.551 0.027 264.364);
+}
+
+html, body {
+  height: 100%;
+  /* Allow scrolling by default */
+  overflow: auto;
+  /* Prevent touch gestures and page sliding only in dashboard */
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+  /* Prevent horizontal scrolling */
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
+  font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  margin: 0;
+  padding: 0;
+  /* Only fix position for dashboard, not contact page */
+}
+
+/* Dashboard-specific layout with proper scrolling */
+body.dashboard-mode {
+  position: static;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure blog agent pages can scroll properly */
+.blog-agent-container {
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Contact page specific scrolling */
+body.contact-mode {
+  position: static;
+  overflow: auto;
+  height: auto;
+  min-height: 100vh;
+}
+
+* {
+  border-color: var(--border);
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+/* Power BI inspired utilities */
+.powerbi-gradient {
+  background: linear-gradient(135deg, var(--powerbi-blue) 0%, var(--powerbi-light-blue) 100%);
+}
+
+.healthcare-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.metric-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.metric-card:hover {
+  box-shadow: 0 4px 12px 0 rgba(0, 120, 212, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Chart styling */
+.recharts-wrapper {
+  font-family: inherit;
+}
+
+.recharts-cartesian-axis-tick-value {
+  font-size: 12px;
+  fill: var(--muted-foreground);
+}
+
+.recharts-legend-wrapper {
+  font-size: 14px;
+}
+
+/* Notification styles */
+.notification-badge {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Loading animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Search bar animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Mobile-First Responsive Design */
+@media (max-width: 640px) {
+  /* Mobile Layout Adjustments */
+  .metric-card {
+    padding: 0.75rem;
+    min-height: auto;
+  }
+
+  /* Mobile Typography */
+  h1 { font-size: 1.25rem; line-height: 1.4; }
+  h2 { font-size: 1.125rem; line-height: 1.4; }
+  h3 { font-size: 1rem; line-height: 1.4; }
+  h4 { font-size: 0.9rem; line-height: 1.4; }
+
+  /* Mobile Spacing */
+  .mobile-spacing {
+    padding: 0.75rem;
+  }
+
+  /* Mobile Tables */
+  .mobile-table {
+    font-size: 0.75rem;
+  }
+
+  .mobile-table th,
+  .mobile-table td {
+    padding: 0.5rem 0.25rem;
+  }
+
+  /* Mobile Search */
+  .mobile-search {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  /* Mobile Cards */
+  .mobile-card {
+    margin-bottom: 0.75rem;
+    border-radius: 0.5rem;
+  }
+
+  /* Mobile Grid */
+  .mobile-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Mobile Buttons */
+  .mobile-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  /* Text overflow prevention */
+  h1, h2, h3, h4, h5, h6 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  p, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Prevent horizontal overflow */
+  .healthcare-card {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Mobile badge adjustments */
+  .badge {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.375rem;
+    white-space: nowrap;
+  }
+
+  /* Mobile flex adjustments */
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Tablet Adjustments */
+  .metric-card {
+    padding: 1rem;
+  }
+
+  /* Tablet Grid */
+  .tablet-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablet Adjustments for Keywords */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .tablet-keyword-layout {
+    display: block;
+  }
+
+  .mobile-keyword-card {
+    padding: 1.25rem;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Desktop Overrides */
+  .desktop-only {
+    display: block;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+}
+
+/* Mobile Navigation Drawer */
+@media (max-width: 768px) {
+  .mobile-nav {
+    position: fixed;
+    top: 0;
+    left: -320px; /* Start completely off-screen */
+    width: 280px; /* Fixed width for better UX */
+    height: 100vh;
+    max-height: 100vh;
+    background: white;
+    z-index: 1050; /* Higher than overlay */
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent body overflow */
+  }
+
+  .mobile-nav.open {
+    left: 0; /* Slide into view */
+  }
+
+  /* Ensure the sidebar content is scrollable */
+  .mobile-nav .w-full.h-full.flex.flex-col {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Make the navigation section scrollable */
+  .mobile-nav nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
+  }
+
+  /* Ensure footer stays at bottom */
+  .mobile-nav .p-3.border-t {
+    flex-shrink: 0;
+    background: white;
+  }
+
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000; /* Below the nav */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(2px);
+  }
+
+  .mobile-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Prevent body scroll when drawer is open */
+  body.mobile-nav-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+}
+
+/* Additional mobile optimizations for very small screens */
+@media (max-width: 375px) {
+  .mobile-nav {
+    width: 260px; /* Slightly smaller for very small screens */
+    left: -260px;
+  }
+}
+
+@media (max-width: 320px) {
+  .mobile-nav {
+    width: 240px; /* Even smaller for very small screens */
+    left: -240px;
+  }
+}
+
+/* Ensure proper viewport handling on mobile */
+@media (max-width: 768px) {
+  .mobile-nav {
+    /* Ensure the nav takes full height */
+    height: 100vh;
+    height: 100dvh; /* Use dynamic viewport height for mobile browsers */
+  }
+  
+  /* Prevent any horizontal scrolling */
+  .mobile-nav * {
+    max-width: 100%;
+  }
+  
+  /* Ensure buttons don't overflow */
+  .mobile-nav button {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Optimize navigation spacing for small screens */
+  .mobile-nav nav {
+    padding-bottom: 2rem; /* Extra padding at bottom for better scrolling */
+  }
+  
+  /* Ensure section headers don't get cut off */
+  .mobile-nav h3 {
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Landing page mobile scrolling fixes */
+  .landing-page-container {
+    position: static;
+    overflow: visible;
+    height: auto;
+    min-height: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ensure landing page content can scroll */
+  .landing-page-container * {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Fix sticky navigation on mobile for landing pages */
+  .landing-page-container nav.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  /* Ensure proper touch scrolling on mobile */
+  .landing-page-container {
+    touch-action: pan-y;
+    overscroll-behavior: auto;
+  }
+}
+
+/* Mobile Scroll Optimizations */
+@media (max-width: 768px) {
+  .mobile-scroll {
+    overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    /* Allow vertical and horizontal scrolling */
+    touch-action: pan-y pan-x;
+  }
+
+  .mobile-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .mobile-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+
+  .mobile-scroll::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+
+  /* Mobile Card Layouts */
+  .mobile-keyword-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-keyword-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Mobile Typography Improvements */
+  .mobile-keyword-card h4 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .mobile-keyword-card .text-xs {
+    font-size: 0.75rem;
+  }
+
+  .mobile-keyword-card .text-sm {
+    font-size: 0.8125rem;
+  }
+
+  /* Mobile Badge Adjustments */
+  .mobile-keyword-card .badge {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.375rem;
+  }
+
+  /* Mobile Metrics Grid */
+  .mobile-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .mobile-metrics-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+/* Global text wrapping utilities */
+.break-words {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.text-wrap {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Prevent overflow in all containers */
+.healthcare-card, .metric-card, .border {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Badge responsive improvements */
+.badge-responsive {
+  font-size: clamp(0.625rem, 0.6rem + 0.25vw, 0.75rem);
+  padding: 0.125rem 0.375rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Flex container improvements for mobile */
+.flex-mobile-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .flex-mobile-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Prevent page swipe/slide gestures on mobile - but allow scrolling for landing pages */
+@media (max-width: 768px) {
+  * {
+    /* Prevent pull-to-refresh and overscroll */
+    overscroll-behavior: contain;
+  }
+
+  /* Main app container - prevent all swipe gestures */
+  .h-screen {
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
+
+  /* Prevent text selection on non-interactive elements */
+  h1, h2, h3, h4, h5, h6, p, span, div:not(.mobile-scroll) {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Allow text selection only for inputs and content areas */
+  input, textarea, [contenteditable="true"] {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    touch-action: manipulation;
+  }
+
+  /* Prevent rubber band effect on iOS - but only for dashboard */
+  body.dashboard-mode {
+    position: static;
+    width: 100%;
+    height: 100vh;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Allow normal scrolling for landing pages */
+  body:not(.dashboard-mode) {
+    position: static;
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Ensure scrollable content in dashboard pages */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Dropdown menu fixes for transparency and z-index */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}
+
+[data-radix-dropdown-menu-content] {
+  background: var(--popover) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 9999 !important;
+}
+
+.dropdown-content {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 9999 !important;
+}
+
+/* Notification dropdown specific styling */
+.notification-dropdown {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure dropdowns are not cut off by parent containers */
+[data-radix-popper-content-wrapper] {
+  position: fixed !important;
+}
+
+/* Fix for any overflow issues in the main layout */
+/* Allow specific elements to have overflow hidden */
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
+/* Ensure proper stacking context for dropdowns */
+header {
+  position: relative;
+  z-index: 1000;
+}
+
+/* Additional fixes for dropdown positioning */
+[data-radix-popper-content-wrapper] {
+  position: fixed !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure dropdowns render above all other content */
+[data-radix-dropdown-menu-content] {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Fix for any container that might clip dropdowns */
+.flex-1 {
+  position: relative;
+}
+
+/* Ensure the main content area doesn't interfere with dropdowns */
+main {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fixed layout utilities */
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+/* Ensure sidebar stays fixed */
+.w-64 {
+  width: 16rem;
+}
+
+/* Nunito Sans font utilities */
+.font-nunito {
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+/* Ensure all text elements use Nunito Sans */
+h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea, select {
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px) translateY(-1px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px) translateY(1px); }
+}
+
+@keyframes slideInError {
+  0% { transform: translateY(-20px) scale(0.95); opacity: 0; }
+  50% { transform: translateY(5px) scale(1.02); opacity: 0.8; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInItem {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes expand {
+  from {
+    opacity: 0;
+    transform: scaleY(0.95);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+    max-height: 1000px;
+  }
+}
+
+.animate-shake {
+  animation: shake 0.8s ease-in-out, slideInError 0.5s ease-out;
+}
+
+.animate-error-entrance {
+  animation: slideInError 0.5s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out both;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out both;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out both;
+}
+
+.animate-fade-in-item {
+  animation: fadeInItem 0.6s ease-out both;
+}
+
+.animate-expand {
+  animation: expand 0.3s ease-out both;
+}
+
+/* Loading Screen Animations */
+@keyframes logoEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes logoOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes scaleOut {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.95);
+  }
+}
+
+@keyframes pulseOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInDelayed {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseSlow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounce1 {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+  }
+  40% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes bounce2 {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+  }
+  40% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes bounce3 {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+  }
+  40% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes loadingBar {
+  0% {
+    width: 0%;
+    transform: translateX(-100%);
+  }
+  50% {
+    width: 100%;
+    transform: translateX(0%);
+  }
+  100% {
+    width: 100%;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes textShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.animate-logo-entrance {
+  animation: logoEntrance 1s ease-out both;
+}
+
+.animate-logo-out {
+  animation: logoOut 0.5s ease-in both;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.5s ease-in both;
+}
+
+.animate-scale-out {
+  animation: scaleOut 0.5s ease-in both;
+}
+
+.animate-pulse-out {
+  animation: pulseOut 0.5s ease-in both;
+}
+
+.animate-fade-in-delayed {
+  animation: fadeInDelayed 0.8s ease-out 0.5s both;
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 2s ease-in-out infinite;
+}
+
+.animate-bounce-1 {
+  animation: bounce1 1.4s infinite;
+  animation-delay: 0s;
+}
+
+.animate-bounce-2 {
+  animation: bounce2 1.4s infinite;
+  animation-delay: 0.2s;
+}
+
+.animate-bounce-3 {
+  animation: bounce3 1.4s infinite;
+  animation-delay: 0.4s;
+}
+
+.animate-loading-bar {
+  animation: loadingBar 2s ease-in-out infinite;
+}
+
+.animate-text-shimmer {
+  background: linear-gradient(90deg, #6b7280, #3b82f6, #6b7280);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 2s ease-in-out infinite;
+}
+
+/* Hide Next.js error overlay and notifications */
+#__next-build-watcher,
+[data-nextjs-toast],
+[data-nextjs-dialog-overlay],
+[data-nextjs-dialog],
+[data-nextjs-scroll-lock],
+nextjs-portal {
+  display: none !important;
+}
+
+/* Hide React error overlay */
+iframe[style*="position: fixed"] {
+  display: none !important;
+}
+
+/* Hide any error notifications in bottom left */
+[style*="position: fixed"][style*="bottom"][style*="left"] {
+  display: none !important;
+}
+
+/* Tab navigation responsive utilities - No horizontal scrolling */
+.tab-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  width: 100%;
+  overflow: visible;
+}
+
+@media (min-width: 640px) {
+  .tab-navigation {
+    gap: 0.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tab-navigation {
+    gap: 0.75rem;
+  }
+}
+
+/* Enhanced tab styling with proper spacing */
+.tab-container {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-container .tab-list {
+  display: flex;
+  overflow-x: auto;
+  margin-bottom: -1px;
+  justify-content: center;
+}
+
+.tab-container .tab-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  border-bottom-width: 2px;
+  transition: all 0.3s;
+}
+
+.tab-container .tab-item.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.tab-container .tab-item:not(.active) {
+  color: #6b7280;
+  border-bottom-color: transparent;
+}
+
+.tab-container .tab-item:not(.active):hover {
+  color: #374151;
+  border-bottom-color: #d1d5db;
+}
+
+/* Ensure tabs are always visible and clickable */
+.tab-button {
+  display: flex;
+  align-items: center;
+  min-height: 2rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  background-color: rgb(249 250 251);
+  color: rgb(17 24 39);
+}
+
+.tab-button.active {
+  background-color: rgb(239 246 255);
+  color: rgb(29 78 216);
+  border-color: rgb(147 197 253);
+}
+
+/* Lower resolution optimizations (1280x720 and similar) */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .tab-button {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .status-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .content-header-responsive {
+    padding: 1rem;
+  }
+
+  /* Compact spacing for lower resolutions */
+  .healthcare-card {
+    padding: 1rem;
+  }
+}
+
+/* 1366x768 and similar resolutions */
+@media (min-width: 1280px) and (max-width: 1440px) {
+  .tab-button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .status-grid-responsive {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Professional Healthcare Dashboard Classes */
+.healthcare-primary {
+  background-color: var(--healthcare-primary);
+  color: #ffffff;
+}
+
+.healthcare-secondary {
+  background-color: var(--healthcare-secondary);
+  color: #ffffff;
+}
+
+.healthcare-accent {
+  background-color: var(--healthcare-accent);
+  color: var(--healthcare-secondary);
+}
+
+.healthcare-muted {
+  background-color: var(--healthcare-muted);
+  color: var(--healthcare-secondary);
+}
+
+.text-healthcare-primary {
+  color: var(--healthcare-primary);
+}
+
+.text-healthcare-secondary {
+  color: var(--healthcare-secondary);
+}
+
+.border-healthcare-primary {
+  border-color: var(--healthcare-primary);
+}
+
+.border-healthcare-secondary {
+  border-color: var(--healthcare-secondary);
+}
+
+.hover\:bg-healthcare-primary:hover {
+  background-color: var(--healthcare-primary);
+  color: #ffffff;
+}
+
+.hover\:bg-healthcare-secondary:hover {
+  background-color: var(--healthcare-secondary);
+  color: #ffffff;
+}
+
+/* Enhanced Loading Animation Styles */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3), 0 0 40px rgba(59, 130, 246, 0.2), 0 0 60px rgba(99, 102, 241, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.5), 0 0 60px rgba(59, 130, 246, 0.3), 0 0 90px rgba(99, 102, 241, 0.2);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounceSubtle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+}
+
+@keyframes numberChange {
+  0% {
+    transform: scale(1);
+    color: rgb(34, 197, 94);
+  }
+  50% {
+    transform: scale(1.1);
+    color: rgb(59, 130, 246);
+  }
+  100% {
+    transform: scale(1);
+    color: rgb(34, 197, 94);
+  }
+}
+
+/* Animation Classes */
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounceSubtle 2s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 3s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spinReverse 4s linear infinite;
+}
+
+.animate-text-glow {
+  animation: textGlow 2s ease-in-out infinite;
+}
+
+.animate-shine {
+  animation: shine 2s ease-in-out infinite;
+}
+
+.animate-number-change {
+  animation: numberChange 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+/* Subtle silver theme animations */
+@keyframes pulseSubtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shineSubtle {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 2s ease-in-out infinite;
+}
+
+.animate-shine-subtle {
+  animation: shineSubtle 3s ease-in-out infinite;
+}
+
+/* Markdown Prose Styles */
+.prose {
+  color: #374151;
+  max-width: 65ch;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.prose [class~="lead"] {
+  color: #6b7280;
+  font-size: 1.25em;
+  line-height: 1.6;
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
+}
+
+.prose a {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.prose strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.prose ol {
+  counter-reset: list-counter;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose ol > li {
+  position: relative;
+  counter-increment: list-counter;
+}
+
+.prose ol > li::before {
+  content: counter(list-counter) ".";
+  position: absolute;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.prose ul {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose ul > li {
+  position: relative;
+}
+
+.prose ul > li::before {
+  content: "";
+  position: absolute;
+  background-color: #d1d5db;
+  border-radius: 50%;
+  width: 0.375em;
+  height: 0.375em;
+  top: calc(0.875em - 0.1875em);
+  left: -1.25em;
+}
+
+.prose hr {
+  border-color: #e5e7eb;
+  border-top-width: 1px;
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+.prose blockquote {
+  font-weight: 500;
+  font-style: italic;
+  color: #111827;
+  border-left-width: 0.25rem;
+  border-left-color: #e5e7eb;
+  quotes: "\201C""\201D""\2018""\2019";
+  margin-top: 1.6em;
+  margin-bottom: 1.6em;
+  padding-left: 1em;
+}
+
+.prose blockquote p:first-of-type::before {
+  content: open-quote;
+}
+
+.prose blockquote p:last-of-type::after {
+  content: close-quote;
+}
+
+.prose h1 {
+  color: #111827;
+  font-weight: 800;
+  font-size: 2.25em;
+  margin-top: 0;
+  margin-bottom: 0.8888889em;
+  line-height: 1.1111111;
+}
+
+.prose h2 {
+  color: #111827;
+  font-weight: 700;
+  font-size: 1.5em;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3333333;
+}
+
+.prose h3 {
+  color: #111827;
+  font-weight: 600;
+  font-size: 1.25em;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+  line-height: 1.6;
+}
+
+.prose h4 {
+  color: #111827;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.5;
+}
+
+.prose figure figcaption {
+  color: #6b7280;
+  font-size: 0.875em;
+  line-height: 1.4285714;
+  margin-top: 0.8571429em;
+}
+
+.prose code {
+  color: #111827;
+  font-weight: 600;
+  font-size: 0.875em;
+}
+
+.prose code::before {
+  content: "`";
+}
+
+.prose code::after {
+  content: "`";
+}
+
+.prose a code {
+  color: #2563eb;
+}
+
+.prose pre {
+  color: #e5e7eb;
+  background-color: #1f2937;
+  overflow-x: auto;
+  font-weight: 400;
+  font-size: 0.875em;
+  line-height: 1.7142857;
+  margin-top: 1.7142857em;
+  margin-bottom: 1.7142857em;
+  border-radius: 0.375rem;
+  padding-top: 0.8571429em;
+  padding-right: 1.1428571em;
+  padding-bottom: 0.8571429em;
+  padding-left: 1.1428571em;
+}
+
+.prose pre code {
+  background-color: transparent;
+  border-width: 0;
+  border-radius: 0;
+  padding: 0;
+  font-weight: 400;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+}
+
+.prose pre code::before {
+  content: none;
+}
+
+.prose pre code::after {
+  content: none;
+}
+
+.prose table {
+  width: 100%;
+  table-layout: auto;
+  text-align: left;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  font-size: 0.875em;
+  line-height: 1.7142857;
+}
+
+.prose thead {
+  color: #111827;
+  font-weight: 600;
+  border-bottom-width: 1px;
+  border-bottom-color: #d1d5db;
+}
+
+.prose thead th {
+  vertical-align: bottom;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+.prose tbody tr {
+  border-bottom-width: 1px;
+  border-bottom-color: #f3f4f6;
+}
+
+.prose tbody tr:nth-child(2n + 1) {
+  background-color: #f9fafb;
+}
+
+.prose tbody td {
+  vertical-align: baseline;
+}
+
+.prose tbody td:first-child {
+  padding-left: 0;
+}
+
+.prose tbody td:last-child {
+  padding-right: 0;
+}
+
+.prose tbody td {
+  padding-top: 0.5714286em;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+/* Enhanced Markdown Prose Styles */
+.prose {
+  color: #374151;
+  max-width: 65ch;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.prose [class~="lead"] {
+  color: #6b7280;
+  font-size: 1.25em;
+  line-height: 1.6;
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
+}
+
+.prose a {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.prose strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.prose ol {
+  counter-reset: list-counter;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose ol > li {
+  position: relative;
+  counter-increment: list-counter;
+}
+
+.prose ol > li::before {
+  content: counter(list-counter) ".";
+  position: absolute;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.prose ul {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose ul > li {
+  position: relative;
+}
+
+.prose ul > li::before {
+  content: "";
+  position: absolute;
+  background-color: #d1d5db;
+  border-radius: 50%;
+  width: 0.375em;
+  height: 0.375em;
+  top: calc(0.875em - 0.1875em);
+  left: -1.25em;
+}
+
+.prose hr {
+  border-color: #e5e7eb;
+  border-top-width: 1px;
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+.prose blockquote {
+  font-weight: 500;
+  font-style: italic;
+  color: #111827;
+  border-left-width: 0.25rem;
+  border-left-color: #e5e7eb;
+  quotes: "\201C""\201D""\2018""\2019";
+  margin-top: 1.6em;
+  margin-bottom: 1.6em;
+  padding-left: 1em;
+}
+
+.prose blockquote p:first-of-type::before {
+  content: open-quote;
+}
+
+.prose blockquote p:last-of-type::after {
+  content: close-quote;
+}
+
+.prose h1 {
+  color: #111827;
+  font-weight: 800;
+  font-size: 2.25em;
+  margin-top: 0;
+  margin-bottom: 0.8888889em;
+  line-height: 1.1111111;
+}
+
+.prose h2 {
+  color: #111827;
+  font-weight: 700;
+  font-size: 1.5em;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3333333;
+}
+
+.prose h3 {
+  color: #111827;
+  font-weight: 600;
+  font-size: 1.25em;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+  line-height: 1.6;
+}
+
+.prose h4 {
+  color: #111827;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.5;
+}
+
+.prose figure figcaption {
+  color: #6b7280;
+  font-size: 0.875em;
+  line-height: 1.4285714;
+  margin-top: 0.8571429em;
+}
+
+.prose code {
+  color: #111827;
+  font-weight: 600;
+  font-size: 0.875em;
+}
+
+.prose code::before {
+  content: "`";
+}
+
+.prose code::after {
+  content: "`";
+}
+
+.prose a code {
+  color: #2563eb;
+}
+
+.prose pre {
+  color: #e5e7eb;
+  background-color: #1f2937;
+  overflow-x: auto;
+  font-weight: 400;
+  font-size: 0.875em;
+  line-height: 1.7142857;
+  margin-top: 1.7142857em;
+  margin-bottom: 1.7142857em;
+  border-radius: 0.375rem;
+  padding-top: 0.8571429em;
+  padding-right: 1.1428571em;
+  padding-bottom: 0.8571429em;
+  padding-left: 1.1428571em;
+}
+
+.prose pre code {
+  background-color: transparent;
+  border-width: 0;
+  border-radius: 0;
+  padding: 0;
+  font-weight: 400;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+}
+
+.prose pre code::before {
+  content: none;
+}
+
+.prose pre code::after {
+  content: none;
+}
+
+.prose table {
+  width: 100%;
+  table-layout: auto;
+  text-align: left;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  font-size: 0.875em;
+  line-height: 1.7142857;
+}
+
+.prose thead {
+  color: #111827;
+  font-weight: 600;
+  border-bottom-width: 1px;
+  border-bottom-color: #d1d5db;
+}
+
+.prose thead th {
+  vertical-align: bottom;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+.prose tbody tr {
+  border-bottom-width: 1px;
+  border-bottom-color: #f3f4f6;
+}
+
+.prose tbody tr:nth-child(2n + 1) {
+  background-color: #f9fafb;
+}
+
+.prose tbody td {
+  vertical-align: baseline;
+}
+
+.prose tbody td:first-child {
+  padding-left: 0;
+}
+
+.prose tbody td:last-child {
+  padding-right: 0;
+}
+
+.prose tbody td {
+  padding-top: 0.5714286em;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+.prose img {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.prose video {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.prose figure {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.prose figure > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.prose h2 code {
+  font-size: 0.875em;
+}
+
+.prose h3 code {
+  font-size: 0.9em;
+}
+
+.prose ul ul,
+.prose ul ol,
+.prose ol ul,
+.prose ol ol {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+.prose hr + * {
+  margin-top: 0;
+}
+
+.prose h2 + * {
+  margin-top: 0;
+}
+
+.prose h3 + * {
+  margin-top: 0;
+}
+
+.prose h4 + * {
+  margin-top: 0;
+}
+
+.prose h6 + * {
+  margin-top: 0;
+}
+
+.prose thead th:first-child {
+  padding-left: 0;
+}
+
+.prose thead th:last-child {
+  padding-right: 0;
+}
+
+.prose tbody td:first-child {
+  padding-left: 0;
+}
+
+.prose tbody td:last-child {
+  padding-right: 0;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+/* Additional styles for better markdown rendering */
+.prose p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+
+.prose p:first-child {
+  margin-top: 0;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* Enhanced list styling */
+.prose ul > li > ul,
+.prose ul > li > ol,
+.prose ol > li > ul,
+.prose ol > li > ol {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+/* Enhanced table styling */
+.prose table {
+  border-collapse: collapse;
+  border: 1px solid #e5e7eb;
+}
+
+.prose thead th {
+  border-bottom: 2px solid #d1d5db;
+  font-weight: 600;
+  text-align: left;
+}
+
+.prose tbody td {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Enhanced blockquote styling */
+.prose blockquote {
+  background-color: #f9fafb;
+  border-left: 4px solid #3b82f6;
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+/* Enhanced code styling */
+.prose code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.prose pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* Enhanced table styling for blog preview */
+.blog-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  border: 1px solid #e5e7eb;
+  table-layout: fixed;
+}
+
+.blog-content .table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  max-width: 100%;
+}
+
+.blog-content table th,
+.blog-content table td {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+}
+
+.blog-content table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #111827;
+}
+
+.blog-content table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.blog-content table tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* Override any problematic prose styles */
+.blog-content .prose table {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.blog-content .prose thead {
+  border-bottom: 2px solid #d1d5db;
+}
+
+.blog-content .prose tbody td {
+  padding: 0.75rem;
+}
+
+.blog-content .prose thead th {
+  padding: 0.75rem;
+}
+
+/* Fix for markdown tables that have no proper structure */
+.blog-content p {
+  overflow-wrap: break-word;
+}
+
+/* Prevent horizontal overflow in blog content */
+.blog-content {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.blog-content * {
+  max-width: 100%;
+}
+
+/* Modal overlay fixes for full viewport coverage */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  min-width: 100vw;
+  min-height: 100vh;
+  z-index: 40;
+}
+
+/* Ensure modal overlays cover the entire screen including browser UI areas */
+.modal-overlay-full {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  min-width: 100vw;
+  min-height: 100vh;
+  z-index: 40;
+  /* Force full coverage */
+  transform: translateZ(0);
+  will-change: transform;
+}

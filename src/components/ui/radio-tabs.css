@@ -1,0 +1,137 @@
+/* Radio Tabs Component Styles */
+.radio-tabs input {
+  display: none;
+}
+
+.radio-tabs {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  color: #64748b;
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.radio-tab-label {
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  font-weight: 500;
+  letter-spacing: -0.25px;
+  font-size: 14px;
+  transition: color 0.15s ease;
+}
+
+.selection {
+  position: absolute;
+  height: 100%;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  transition: transform 0.3s ease;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .radio-tabs {
+    width: 100% !important;
+    max-width: 100%;
+    border-radius: 12px;
+    border-width: 1px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Hide selection animation on mobile */
+  .selection {
+    display: none !important;
+  }
+  
+  .radio-tab-label {
+    padding: 12px 8px;
+    font-size: 13px;
+    min-height: 48px;
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+  
+  .radio-tab-label .icon {
+    margin-bottom: 2px;
+  }
+  
+  .radio-tab-label span {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  
+  /* Stack tabs vertically on very small screens */
+  @media (max-width: 480px) {
+    .radio-tabs {
+      flex-direction: column;
+      border-radius: 16px;
+      gap: 2px;
+      padding: 4px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    
+    .radio-tab-label {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+    }
+    
+    .radio-tab-label:hover {
+      background: #f1f5f9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .radio-tab-label:active {
+      transform: translateY(0);
+    }
+    
+    /* Active state for mobile */
+    .radio-tab-label.active {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #334155;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+  }
+}
+
+/* Tablet responsive adjustments */
+@media (min-width: 481px) and (max-width: 768px) {
+  .radio-tabs {
+    gap: 2px;
+  }
+  
+  .radio-tab-label {
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+  
+  .radio-tab-label .icon {
+    margin-bottom: 1px;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 640px) {
+  .radio-tabs {
+    width: 100% !important;
+  }
+}
