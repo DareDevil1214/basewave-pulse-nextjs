@@ -17,8 +17,10 @@ import {
   Target,
   TrendingUp,
   Globe,
-  Brain
+  Brain,
+  Shield
 } from 'lucide-react';
+import { getCurrentBranding, getPortalConfig } from '@/lib/branding';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useSearchParams } from 'next/navigation';
@@ -47,7 +49,7 @@ interface SidebarProps {
   onSignOut?: () => void;
 }
 
-const navigationItems = [
+const getNavigationItems = (userRole?: string) => [
   {
     title: 'Dashboard',
     href: '/dashboard',
@@ -102,16 +104,29 @@ const navigationItems = [
     icon: Brain,
     badge: null
   },
+  // Only show Admin tab for admin users
+  ...(userRole === 'admin' ? [{
+    title: 'Admin',
+    href: '/dashboard/admin',
+    icon: Shield,
+    badge: null
+  }] : []),
 ];
 
-const blogPortals = [
-  {
-    id: 'new-people',
-    title: 'New People',
-    href: '/dashboard/blog-agent?portal=new-people',
-    logo: '/logo-load.webp'
-  }
-];
+// Dynamic blog portals based on current business branding
+const getBlogPortals = () => {
+  const branding = getCurrentBranding();
+  const portalConfig = getPortalConfig();
+  
+  return [
+    {
+      id: portalConfig.id,
+      title: portalConfig.name,
+      href: `/dashboard/blog-agent?portal=${portalConfig.id}`,
+      logo: portalConfig.logoUrl
+    }
+  ];
+};
 
 const socialPlatforms = [
   {
@@ -146,22 +161,32 @@ const socialPlatforms = [
   },
 ];
 
-const socialPortals = [
-  {
-    id: 'newpeople',
-    title: 'New People',
-    username: 'newpeople'
-  }
-];
+// Dynamic social portals based on current business branding
+const getSocialPortals = () => {
+  const portalConfig = getPortalConfig();
+  
+  return [
+    {
+      id: portalConfig.id,
+      title: portalConfig.name,
+      username: portalConfig.id
+    }
+  ];
+};
 
-const opportunityPortals = [
-  {
-    id: 'new-people',
-    title: 'New People',
-    href: '/dashboard/opportunities?portal=new-people',
-    logo: '/logo-load.webp'
-  }
-];
+// Dynamic opportunity portals based on current business branding
+const getOpportunityPortals = () => {
+  const portalConfig = getPortalConfig();
+  
+  return [
+    {
+      id: portalConfig.id,
+      title: portalConfig.name,
+      href: `/dashboard/opportunities?portal=${portalConfig.id}`,
+      logo: portalConfig.logoUrl
+    }
+  ];
+};
 
 const seoTabs = [
   {
@@ -178,29 +203,33 @@ const seoTabs = [
   }
 ];
 
-const portalItems = [
-  {
-    id: 'cv-maker',
-    title: 'CV Maker',
-    href: '/dashboard/base-data?portal=cv-maker',
-    logo: '/cv-maker.png'
-  },
-  {
-    id: 'newpeople',
-    title: 'New People',
-    href: '/dashboard/base-data?portal=newpeople',
-    logo: '/logo-load.webp'
-  }
-];
+// Dynamic portal items based on current business branding
+const getPortalItems = () => {
+  const portalConfig = getPortalConfig();
+  
+  return [
+    {
+      id: portalConfig.id,
+      title: portalConfig.name,
+      href: `/dashboard/base-data?portal=${portalConfig.id}`,
+      logo: portalConfig.logoUrl
+    }
+  ];
+};
 
-const ragPortals = [
-  {
-    id: 'newpeople',
-    title: 'New People',
-    href: '/dashboard/rag?portal=newpeople',
-    logo: '/logo-load.webp'
-  }
-];
+// Dynamic RAG portals based on current business branding
+const getRagPortals = () => {
+  const portalConfig = getPortalConfig();
+  
+  return [
+    {
+      id: portalConfig.id,
+      title: portalConfig.name,
+      href: `/dashboard/rag?portal=${portalConfig.id}`,
+      logo: portalConfig.logoUrl
+    }
+  ];
+};
 
 export function Sidebar({ className, user, onSignOut }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -294,8 +323,8 @@ export function Sidebar({ className, user, onSignOut }: SidebarProps) {
          <div className="flex items-start justify-center -mt-15">
            <Link href="/dashboard">
              <img
-               src="/new-logo.png"
-               alt="New People Logo"
+               src={getCurrentBranding().logoUrl}
+               alt={`${getCurrentBranding().name} Logo`}
                className={cn(
                  "object-contain transition-all duration-300 cursor-pointer hover:scale-105",
                  isCollapsed ? "w-48 h-48" : "w-56 h-56"
@@ -365,7 +394,7 @@ export function Sidebar({ className, user, onSignOut }: SidebarProps) {
              {/* Navigation */}
        <nav className="flex-1 px-4 pt-0 -mt-10 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
          <div className="space-y-1">
-          {navigationItems.map((item) => {
+          {getNavigationItems(user?.role).map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href ||
               (item.title === 'Blog Agent' && pathname.startsWith('/dashboard/blog-agent')) ||
@@ -446,7 +475,7 @@ export function Sidebar({ className, user, onSignOut }: SidebarProps) {
                         transition={{ duration: 0.3 }}
                         className="ml-6 mt-2 space-y-1"
                       >
-                        {blogPortals.map((portal) => {
+                        {getBlogPortals().map((portal) => {
                           const isSelected = currentPortal === portal.id;
                           return (
                             <Link key={portal.id} href={portal.href}>
@@ -611,7 +640,7 @@ export function Sidebar({ className, user, onSignOut }: SidebarProps) {
             transition={{ duration: 0.2 }}
             className="ml-8 space-y-1"
           >
-            {socialPortals.map((portal) => {
+            {getSocialPortals().map((portal) => {
               const isPortalSelected = currentPlatform === platform.id && currentPortal === portal.id;
               return (
                 <Link 
@@ -828,7 +857,7 @@ export function Sidebar({ className, user, onSignOut }: SidebarProps) {
                         transition={{ duration: 0.3 }}
                         className="ml-6 mt-2 space-y-1"
                       >
-                        {portalItems.map((portal) => {
+                        {getPortalItems().map((portal) => {
                           const isSelected = currentPortal === portal.id;
                           return (
                             <Link key={portal.id} href={portal.href}>
@@ -934,7 +963,7 @@ export function Sidebar({ className, user, onSignOut }: SidebarProps) {
                         transition={{ duration: 0.3 }}
                         className="ml-6 mt-2 space-y-1"
                       >
-                        {opportunityPortals.map((portal) => {
+                        {getOpportunityPortals().map((portal) => {
                           const isSelected = currentPortal === portal.id;
                           return (
                             <Link key={portal.id} href={portal.href}>
@@ -1040,7 +1069,7 @@ export function Sidebar({ className, user, onSignOut }: SidebarProps) {
                         transition={{ duration: 0.3 }}
                         className="ml-6 mt-2 space-y-1"
                       >
-                        {ragPortals.map((portal) => {
+                        {getRagPortals().map((portal) => {
                           const isSelected = currentPortal === portal.id;
                           return (
                             <Link key={portal.id} href={portal.href}>

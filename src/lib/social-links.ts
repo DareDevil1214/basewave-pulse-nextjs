@@ -1,3 +1,5 @@
+import { getCurrentBranding } from './branding';
+
 export interface SocialLinks {
   facebook: string;
   instagram: string;
@@ -32,12 +34,12 @@ export const SOCIAL_LINKS: Record<string, SocialLinks> = {
     twitter: 'https://x.com/NeovibeMag',
     linkedin: 'https://www.linkedin.com/in/neovibe-mag-62a908379/'
   },
-  'new-people': {
-    facebook: 'https://www.facebook.com/newpeople',
-    instagram: 'https://www.instagram.com/newpeople/',
-    threads: 'https://www.threads.com/@newpeople',
-    twitter: 'https://x.com/newpeople',
-    linkedin: 'https://www.linkedin.com/company/newpeople'
+  'basewave': {
+    facebook: 'https://www.facebook.com/basewave',
+    instagram: 'https://www.instagram.com/basewave/',
+    threads: 'https://www.threads.com/@basewave',
+    twitter: 'https://x.com/basewave',
+    linkedin: 'https://www.linkedin.com/company/basewave'
   }
 };
 
@@ -51,8 +53,8 @@ export const PORTAL_LINKS: Record<string, PortalLinks> = {
   'neo-vibe-mag': {
     website: 'https://www.neovibemag.com/articles'
   },
-  'new-people': {
-    website: 'https://www.new-people.cv/'
+  'basewave': {
+    website: 'https://basewave.com'
   }
 };
 
@@ -64,8 +66,9 @@ export const getPortalId = (portal: string): string => {
     'elite-equilibrium': 'elite-equilibrium',
     'eternalelite': 'eternal-elite',
     'eternal-elite': 'eternal-elite',
-    'newpeople': 'new-people',
-    'new-people': 'new-people'
+    'newpeople': 'basewave',
+    'new-people': 'basewave',
+    'basewave': 'basewave'
   };
   return portalMap[portal.toLowerCase()] || portal;
 };
@@ -94,3 +97,15 @@ export const getPortalLink = (portal: string): string | null => {
   const portalLinks = PORTAL_LINKS[portalId];
   return portalLinks ? portalLinks.website : null;
 };
+
+// Get current business social links
+export function getCurrentSocialLinks(): SocialLinks {
+  const branding = getCurrentBranding();
+  return branding.socialLinks || SOCIAL_LINKS.basewave;
+}
+
+// Get current business portal link
+export function getCurrentPortalLink(): string {
+  const branding = getCurrentBranding();
+  return branding.website || 'https://basewave.com';
+}

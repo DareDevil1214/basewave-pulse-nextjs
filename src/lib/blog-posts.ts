@@ -1,5 +1,6 @@
-import { collection, getDocs, addDoc, query, where, serverTimestamp, DocumentData, updateDoc, deleteDoc, doc } from 'firebase/firestore';
-import { db } from './firebase';
+// Removed direct Firestore imports - now using backend API only
+// import { collection, getDocs, addDoc, query, where, serverTimestamp, DocumentData, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+// import { db } from './firebase';
 
 // Interface for generated blog posts
 export interface BlogPost {
@@ -19,53 +20,55 @@ export interface BlogPost {
 // Fetch blog posts from blog_posts collection
 export const fetchBlogPosts = async (portal?: string): Promise<BlogPost[]> => {
   try {
-    console.log(`🔍 Fetching blog posts${portal ? ` for ${portal}` : ''}...`);
+    console.log(`🔍 Fetching blog posts via backend API${portal ? ` for ${portal}` : ''}...`);
     
-    let querySnapshot;
-    if (portal) {
-      const q = query(collection(db, 'blog_posts'), where('portal', '==', portal));
-      querySnapshot = await getDocs(q);
-    } else {
-      querySnapshot = await getDocs(collection(db, 'blog_posts'));
-    }
-    
-    console.log('📄 Blog posts snapshot size:', querySnapshot.size);
-    
-    if (querySnapshot.size === 0) {
-      console.log(`❌ No blog posts found${portal ? ` for ${portal}` : ''}`);
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      console.error('❌ No authentication token found');
       return [];
     }
-    
-    const blogPosts: BlogPost[] = [];
-    
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      blogPosts.push({
-        id: doc.id,
-        title: data.title || 'Untitled Post',
-        content: data.content || '',
-        portal: data.portal,
-        status: data.status || 'published',
-        url: data.url,
-        keywords: data.keywords || [],
-        createdAt: data.createdAt,
-        scheduledFor: data.scheduledFor,
-        imageGenerated: data.imageGenerated || false,
-        imageUrl: data.imageUrl,
-      });
+
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (portal) params.append('portal', portal);
+
+    const response = await fetch(`/api/business/blog-posts?${params.toString()}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
+
+    if (!response.ok) {
+      console.error('❌ Blog posts API failed:', response.status, response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
     
-    // Sort by creation date (newest first)
-    blogPosts.sort((a, b) => {
-      const dateA = a.createdAt ? new Date(a.createdAt.seconds * 1000) : new Date(0);
-      const dateB = b.createdAt ? new Date(b.createdAt.seconds * 1000) : new Date(0);
-      return dateB.getTime() - dateA.getTime();
-    });
+    if (!data.success) {
+      console.error('❌ Blog posts API returned error:', data.message);
+      return [];
+    }
+
+    const blogPosts: BlogPost[] = data.data.map((post: any) => ({
+      id: post.id,
+      title: post.title || 'Untitled Post',
+      content: post.content || '',
+      portal: post.portal,
+      status: post.status || 'published',
+      url: post.url,
+      keywords: post.keywords || [],
+      createdAt: post.createdAt,
+      scheduledFor: post.scheduledFor,
+      imageGenerated: post.imageGenerated || false,
+      imageUrl: post.imageUrl,
+    }));
     
-    console.log('✅ Fetched blog posts:', blogPosts.length, 'documents');
+    console.log(`✅ Fetched ${blogPosts.length} blog posts via backend API`);
     return blogPosts;
   } catch (error) {
-    console.error('❌ Error fetching blog posts:', error);
+    console.error('❌ Error fetching blog posts via backend API:', error);
     return [];
   }
 };

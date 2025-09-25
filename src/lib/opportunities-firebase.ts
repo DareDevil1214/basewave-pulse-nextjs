@@ -1,5 +1,6 @@
 import { db } from './firebase';
 import { collection, getDocs, query, where, deleteDoc, updateDoc, doc } from 'firebase/firestore';
+import { getCurrentBranding } from './branding';
 
 export interface Article {
   description: string;
@@ -31,7 +32,7 @@ const DOCUMENT_PORTAL_MAPPING = {
   'J1RrUZRN3Y6gzZksqwo1': 'eternal-elite',
   'sIFH0iWKoXchpo6oKb4O': 'elite-equilibrium',
   'cUZe4755uWN1G6YSC6nX': 'neo-vibe-mag',
-  'new-people-doc-id': 'new-people'  // Placeholder document ID for New People portal
+  'basewave-doc-id': 'basewave'  // Placeholder document ID for BaseWave portal
 };
 
 // Fetch opportunities for a specific portal
@@ -58,7 +59,7 @@ export const fetchPortalOpportunities = async (portalId: string): Promise<Portal
       if (data.articles) {
         Object.values(data.articles).forEach((article) => {
           // Filter by website based on portal
-          if (portalId === 'new-people' && article.website === 'https://newpeople.com') {
+          if (portalId === 'basewave' && article.website === getCurrentBranding().website) {
             allArticles.push(article);
           } else if (portalId === 'cv-maker' && article.website === 'https://cv-maker.com') {
             allArticles.push(article);
@@ -87,12 +88,12 @@ export const fetchAllPortalOpportunities = async (): Promise<PortalOpportunities
     console.log('🔍 Fetching all portal opportunities...');
 
     // Fetch both supported portals
-    const [newPeopleResult, cvMakerResult] = await Promise.all([
-      fetchPortalOpportunities('new-people'),
+    const [basewaveResult, cvMakerResult] = await Promise.all([
+      fetchPortalOpportunities('basewave'),
       fetchPortalOpportunities('cv-maker')
     ]);
 
-    const validResults = [newPeopleResult, cvMakerResult].filter(result => result !== null);
+    const validResults = [basewaveResult, cvMakerResult].filter(result => result !== null);
 
     console.log(`✅ Fetched ${validResults.length} portal opportunities`);
     return validResults;
@@ -109,7 +110,7 @@ const getPortalDisplayName = (portalId: string): string => {
     'eternal-elite': 'Eternal Elite',
     'elite-equilibrium': 'Elite Equilibrium',
     'neo-vibe-mag': 'Neo Vibe Mag',
-    'new-people': 'New People',
+    'basewave': 'BaseWave',
     'cv-maker': 'CV Maker'
   };
   return displayNames[portalId] || portalId;
@@ -121,7 +122,7 @@ export const getPortalLogo = (portalId: string): string => {
     'eternal-elite': '/eternal-logo.png',
     'elite-equilibrium': '/elite-logo.png',
     'neo-vibe-mag': '/logo-load.webp',
-    'new-people': '/logo-load.webp',
+    'basewave': '/logo-basewave.png',
     'cv-maker': '/cv-maker.png' // Fixed CV Maker logo
   };
   return logos[portalId] || '/logo.png';

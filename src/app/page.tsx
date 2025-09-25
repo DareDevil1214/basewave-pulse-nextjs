@@ -12,6 +12,19 @@ export default function Home() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
+      // Check if user needs onboarding
+      const userData = localStorage.getItem('user_data');
+      if (userData) {
+        try {
+          const parsed = JSON.parse(userData);
+          if (!parsed.onboardingCompleted) {
+            router.push('/onboarding');
+            return;
+          }
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
+      }
       router.push('/dashboard');
     }
   }, [isAuthenticated, isLoading, router]);

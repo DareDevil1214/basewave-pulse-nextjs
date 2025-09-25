@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Bot, X, Loader2, Share, FileText, Instagram, Facebook, Twitter, Linkedin, MessageCircle, Sparkles, Edit3, Wand2, Hash, RefreshCw } from 'lucide-react';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+// Removed direct Firestore imports - now using backend API only
 import { fetchKeywords, generateBlogPost, Keyword } from '@/lib/blog-firebase';
 import { 
   generateKeywordsFromTopic, 
@@ -111,40 +110,59 @@ export function CombinedGenerationForm({ portal, onClose, onSuccess }: CombinedG
     setSocialPlatforms(getSocialPlatforms(generateImage));
   }, [generateImage, portal]);
 
-  // Fetch blog templates from compBlogContent collection
+  // Fetch blog templates ONLY from backend API
   const fetchCompBlogContent = async (): Promise<CompBlogArticle[]> => {
     try {
-      console.log('🔍 Fetching blog templates from compBlogContent collection...');
+      console.log('🔍 Fetching blog templates via backend API...');
 
-      const q = query(collection(db, 'compBlogContent'));
-      const snapshot = await getDocs(q);
+      const token = localStorage.getItem('jwt_token');
+      if (!token) {
+        console.error('❌ No authentication token found');
+        return [];
+      }
 
-      if (snapshot.empty) {
-        console.error('No documents found in compBlogContent collection');
+      const response = await fetch('/api/business/blog-content', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.error('❌ Backend API failed:', response.status, response.statusText);
+        return [];
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        console.error('❌ API returned error:', data.message);
         return [];
       }
 
       const articles: CompBlogArticle[] = [];
+      
+      if (data.data && Array.isArray(data.data)) {
+        data.data.forEach((doc: any) => {
+          if (doc.articles) {
+            Object.entries(doc.articles).forEach(([articleId, article]: [string, any]) => {
+              if (article && article.title) {
+                articles.push({
+                  ...article,
+                  documentId: doc.id,
+                  articleId
+                });
+              }
+            });
+          }
+        });
+      }
 
-      snapshot.forEach((doc) => {
-        const data = doc.data() as CompBlogContent;
-
-        // Check if articles exist
-        if (data.articles) {
-          Object.values(data.articles).forEach((article) => {
-            // Filter by website for newpeople
-            if (article.website === 'https://newpeople.com') {
-              articles.push(article);
-            }
-          });
-        }
-      });
-
-      console.log(`✅ Found ${articles.length} articles for newpeople website`);
+      console.log(`✅ Found ${articles.length} blog templates via backend API`);
       return articles;
 
     } catch (error) {
-      console.error('❌ Error fetching compBlogContent:', error);
+      console.error('❌ Error fetching blog content via backend API:', error);
       return [];
     }
   };

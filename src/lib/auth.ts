@@ -1,4 +1,4 @@
-// Authentication utilities for New People Platform
+// Authentication utilities for BaseWave Platform
 import { 
   signInWithEmailAndPassword, 
   signOut as firebaseSignOut,
@@ -17,6 +17,9 @@ export interface User {
   isAuthenticated: boolean;
   permissions: string[];
   firebaseUser?: FirebaseUser;
+  businessId?: string;
+  businessName?: string;
+  logoUrl?: string;
 }
 
 export interface LoginCredentials {
@@ -66,50 +69,72 @@ const getAdminUsername = (): string => {
   return username;
 };
 
-// Validate login credentials - accepts any username with correct password
-export const validateLogin = (credentials: LoginCredentials): User | null => {
+// Validate login credentials by calling backend API
+export const validateLogin = async (credentials: LoginCredentials): Promise<User | null> => {
   const { username, password } = credentials;
   
   console.log('🔍 Login attempt:', { username, password: '***', passwordLength: password.length });
   
   try {
-    // In development mode, accept any username with the correct password
-    const userData = PREDEFINED_USERS['admin'];
-    console.log('🔑 Expected password from env:', userData?.password ? '***' : 'undefined');
-    console.log('🔑 Expected password length:', userData?.password?.length || 0);
-    console.log('🔑 Password comparison:', password === userData?.password);
-    
-    if (!userData) {
-      console.error('❌ No admin user data found');
-      return null;
+    // Call backend login API
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('❌ Login failed:', data.message);
+      throw new Error(data.message || 'Login failed');
     }
-    
-    if (userData.password !== password) {
-      console.error('❌ Password mismatch');
-      return null;
+
+    if (!data.success) {
+      console.error('❌ Login failed:', data.message);
+      throw new Error(data.message || 'Login failed');
     }
+
+    console.log('✅ Login successful via API');
     
-    console.log('✅ Login successful');
+    // Transform backend response to frontend User format
+    const userData = data.data;
+    
+    // Store JWT token in localStorage for API calls
+    if (userData.token) {
+      localStorage.setItem('jwt_token', userData.token);
+    }
+
+    // Store user data for branding system
+    const userDataForStorage = {
+      username: userData.username,
+      businessName: userData.businessName,
+      logoUrl: userData.logoUrl,
+      businessId: userData.businessId,
+      website: userData.website,
+      description: userData.description,
+      primaryColor: userData.primaryColor,
+      secondaryColor: userData.secondaryColor,
+      socialLinks: userData.socialLinks
+    };
+    localStorage.setItem('user_data', JSON.stringify(userDataForStorage));
     
     return {
-      username: username.toLowerCase() || getAdminUsername(),
-      ...userData.user,
-      isAuthenticated: true
+      username: userData.username,
+      name: userData.businessName || userData.username,
+      email: userData.email,
+      role: userData.role,
+      isAuthenticated: true,
+      permissions: userData.role === 'admin' ? ['all'] : ['user'],
+      businessId: userData.businessId,
+      businessName: userData.businessName,
+      logoUrl: userData.logoUrl,
+      token: userData.token
     };
   } catch (error) {
-    console.error('❌ Environment variable error:', error);
-    // Fallback to hardcoded credentials for development
-    if (username === 'admin' && password === 'admin123') {
-      console.log('✅ Using fallback credentials');
-      return {
-        username: 'admin',
-        name: 'Development User',
-        email: 'dev@newpeople.com',
-        role: 'Administrator',
-        isAuthenticated: true,
-        permissions: ['all']
-      };
-    }
+    console.error('❌ Login error:', error);
     return null;
   }
 };
@@ -140,7 +165,7 @@ export const validateSession = (sessionToken: string): User | null => {
     // Check if session is expired (24 hours)
     if (Date.now() > sessionData.expiresAt) {
       console.log('Session expired, removing token');
-      localStorage.removeItem('newpeople_session');
+      localStorage.removeItem('basewave_session');
       return null;
     }
     
@@ -163,7 +188,7 @@ export const validateSession = (sessionToken: string): User | null => {
 export const refreshSession = (user: User): void => {
   try {
     const newSessionToken = createSession(user);
-    localStorage.setItem('newpeople_session', newSessionToken);
+    localStorage.setItem('basewave_session', newSessionToken);
     console.log('Session refreshed for another 24 hours');
   } catch (error) {
     console.error('Error refreshing session:', error);

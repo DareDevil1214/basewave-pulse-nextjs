@@ -6,6 +6,7 @@ import {
   calculateRankingAnalytics,
   getTopKeywordsFromRankings,
 } from '@/lib/firebase';
+import { getCurrentBranding } from '@/lib/branding';
 
 import { KeywordTab } from './KeywordTab';
 import { RankingsTab } from './RankingsTab';
@@ -23,8 +24,8 @@ export function SEOTabOrchestrator({
 }: OverviewTabProps) {
   const activeTab = activeSubTab;
   
-  // Shared state for all tabs
-  const [selectedFilter, setSelectedFilter] = useState('CV Maker');
+  // Shared state for all tabs - start with current business
+  const [selectedFilter, setSelectedFilter] = useState(getCurrentBranding().name);
   
   // Ranking state
   const [rankingData, setRankingData] = useState<any>(null);

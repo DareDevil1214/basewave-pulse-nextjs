@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Eye, EyeOff, Lock, User, ArrowRight, Sparkles } from 'lucide-react';
+import { getCurrentBranding } from '@/lib/branding';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -44,22 +45,19 @@ export function LoginPage() {
     setIsLoading(true);
     setError(null);
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     try {
-      const user = validateLogin(credentials);
+      const user = await validateLogin(credentials);
       
       if (user) {
         login(user);
       } else {
-        setError('Password Incorrect');
+        setError('Invalid username or password');
         // Auto-dismiss after 3 seconds
         setTimeout(() => setError(null), 3000);
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('Login failed');
+      setError(error instanceof Error ? error.message : 'Login failed');
       setTimeout(() => setError(null), 3000);
     } finally {
       setIsLoading(false);
@@ -139,7 +137,7 @@ export function LoginPage() {
                 <div className="relative inline-block">
                   <Image
                     src="/new-logo.png"
-                    alt="New People Logo"
+                    alt={`${getCurrentBranding().name} Logo`}
                     width={256}
                     height={96}
                     className="max-w-[256px] w-full h-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
@@ -297,7 +295,7 @@ export function LoginPage() {
           style={{ animationDelay: '1200ms' }}
         >
           <p className="text-sm text-gray-500/80 font-medium">
-            © 2024 New People. All rights reserved.
+            © 2024 {getCurrentBranding().name}. All rights reserved.
           </p>
           <p className="text-xs text-gray-400/80 mt-2">
             v2.1.0 - CV Builder and Portfolio Platform

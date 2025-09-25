@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Edit, Save, X, Loader2, CheckCircle, Trash2, Plus, Sparkles } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { getCurrentBranding } from '@/lib/branding';
 import { generateAndSaveOpportunity } from '@/lib/opportunity-generator';
 import { SuccessToast } from '@/components/ui/SuccessToast';
 import Image from 'next/image';
@@ -25,7 +26,7 @@ interface PortalKeyword {
   keywords: string[];
 }
 
-export function PortalKeywordsSection({ portal = 'newpeople' }: PortalKeywordsSectionProps) {
+export function PortalKeywordsSection({ portal = 'basewave' }: PortalKeywordsSectionProps) {
   const [keywords, setKeywords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -44,13 +45,14 @@ export function PortalKeywordsSection({ portal = 'newpeople' }: PortalKeywordsSe
   const fetchKeywords = async () => {
     setLoading(true);
     try {
-      console.log('🔍 Fetching keywords from portalKeywords collection for newpeople...');
+      console.log('🔍 Fetching keywords from portalKeywords collection for current business...');
 
-      const q = query(collection(db, 'portalKeywords'), where('portal', '==', 'newpeople'));
+      const currentPortal = getCurrentBranding().name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'basewave';
+      const q = query(collection(db, 'portalKeywords'), where('portal', '==', currentPortal));
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-        console.log('⚠️ No keywords found for newpeople');
+        console.log('⚠️ No keywords found for current business');
         setKeywords([]);
         return;
       }
@@ -67,7 +69,7 @@ export function PortalKeywordsSection({ portal = 'newpeople' }: PortalKeywordsSe
       });
 
       const totalKeywords = keywordsData.reduce((sum, doc) => sum + (doc.keywords?.length || 0), 0);
-      console.log(`✅ Found ${keywordsData.length} keyword documents with ${totalKeywords} total keywords for newpeople`);
+      console.log(`✅ Found ${keywordsData.length} keyword documents with ${totalKeywords} total keywords for current business`);
       setKeywords(keywordsData);
 
     } catch (error) {
@@ -100,8 +102,9 @@ export function PortalKeywordsSection({ portal = 'newpeople' }: PortalKeywordsSe
       } else {
         // Create new document
         const newDocRef = doc(collection(db, 'portalKeywords'));
+        const currentPortal = getCurrentBranding().name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'basewave';
         await setDoc(newDocRef, {
-          portal: 'newpeople',
+          portal: currentPortal,
           keywords: [newKeyword.trim()]
         });
       }

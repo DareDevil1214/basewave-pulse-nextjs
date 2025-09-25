@@ -3,6 +3,8 @@
  * Handles communication with the backend AI API for generating custom keywords and titles
  */
 
+import { getCurrentBranding } from './branding';
+
 export interface AIKeywordData {
   title: string;
   primary_keywords: string[];
@@ -23,7 +25,7 @@ export interface AIKeywordResponse {
  */
 export async function generateKeywordsFromTopic(
   topic: string, 
-  portal: string = 'newpeople'
+  portal: string = 'basewave'
 ): Promise<AIKeywordResponse> {
   try {
     console.log(`🤖 Generating keywords from topic: "${topic}"`);
@@ -63,7 +65,7 @@ export async function generateKeywordsFromTopic(
 export async function generateKeywordsFromInputs(
   title: string,
   keyword: string,
-  portal: string = 'newpeople'
+  portal: string = 'basewave'
 ): Promise<AIKeywordResponse> {
   try {
     console.log(`🤖 Generating keywords from inputs - Title: "${title}", Keyword: "${keyword}"`);
@@ -111,7 +113,7 @@ export function convertAIDataToFormFormat(aiData: AIKeywordData) {
     long_tail_keywords: aiData.long_tail_keywords,
     outline: aiData.outline,
     visual: 'AI Generated', // Placeholder for visual
-    website: 'https://newpeople.com', // Default website
+    website: getCurrentBranding().website, // Dynamic website
     // Generate a unique ID for this AI-generated content
     documentId: `ai-generated-${Date.now()}`,
     articleId: `ai-${Date.now()}`

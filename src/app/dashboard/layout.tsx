@@ -29,6 +29,11 @@ const getPageInfo = (pathname: string) => {
       title: 'Opportunities',
       description: 'Manage and track business opportunities across your portals'
     };
+  } else if (pathname === '/dashboard/admin') {
+    return {
+      title: 'Admin Panel',
+      description: 'Manage businesses and users'
+    };
   } else {
     return {
       title: 'Dashboard',

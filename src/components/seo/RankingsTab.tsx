@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { getCurrentBranding } from '@/lib/branding';
 import { Badge } from '@/components/ui/badge';
 import { 
   Loader2, 
@@ -172,7 +173,7 @@ export function RankingsTab({
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">SEO Opportunity Detected</h3>
                   <p className="text-gray-600 mb-4">
-                    Your domain (<span className="font-semibold">new-people.cv</span>) is not currently ranking in the top 100 results for most target keywords. 
+                    Your domain (<span className="font-semibold">{getCurrentBranding().website}</span>) is not currently ranking in the top 100 results for most target keywords. 
                     This represents a significant SEO opportunity!
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -205,7 +206,7 @@ export function RankingsTab({
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Rankings Detected! 🎉</h3>
                   <p className="text-gray-600 mb-4">
-                    Great progress! Your domain (<span className="font-semibold">new-people.cv</span>) is ranking for {rankingData.top100Keywords || 0} keywords in the top 100 results.
+                    Great progress! Your domain (<span className="font-semibold">{getCurrentBranding().website}</span>) is ranking for {rankingData.top100Keywords || 0} keywords in the top 100 results.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

@@ -1,5 +1,7 @@
-import { db } from './firebase';
-import { collection, getDocs, addDoc, query, where, serverTimestamp, DocumentData, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+// Removed direct Firestore imports - now using backend API only
+// import { db } from './firebase';
+// import { collection, getDocs, addDoc, query, where, serverTimestamp, DocumentData, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { getCurrentBranding } from './branding';
 
 // Interface for blog content from compBlogContent collection
 export interface BlogContent {
@@ -39,71 +41,62 @@ export interface BlogPost {
   imageUrl?: string;
 }
 
-// Fetch blog content templates from compBlogContent collection with portal filter
+// Fetch blog content templates from backend API only
 export const fetchBlogContent = async (portal?: string): Promise<BlogContent[]> => {
   try {
-    console.log(`🔍 Fetching blog content from compBlogContent collection${portal ? ` for portal: ${portal}` : ''}...`);
+    console.log(`🔍 Fetching blog content via backend API${portal ? ` for portal: ${portal}` : ''}...`);
     
-    // Get all documents from compBlogContent collection (no filtering at query level since website is nested)
-    const querySnapshot = await getDocs(collection(db, 'compBlogContent'));
-    
-    console.log('📄 Blog content snapshot size:', querySnapshot.size);
-    
-    if (querySnapshot.size === 0) {
-      console.log(`❌ No documents found in compBlogContent collection${portal ? ` for portal: ${portal}` : ''}`);
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      console.error('❌ No authentication token found');
       return [];
     }
-    
-    const blogContent: BlogContent[] = [];
-    
-    // Process each document in the collection
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      console.log(`Processing document ${doc.id}:`, data);
-      
-      // If the document has articles field
-      if (data.articles) {
-        // Loop through all articles to create separate blog templates
-        Object.keys(data.articles).forEach(articleKey => {
-          const article = data.articles[articleKey];
-          if (article && article.title) {
-            // Filter by website field within each article if portal is specified
-            if (portal && article.website !== portal) {
-              return; // Skip this article if it doesn't match the portal
-            }
-            
-            blogContent.push({
-              id: `${doc.id}_${articleKey}`,
-              title: article.title,
-              content: article.description || '',
-              author: data.author || '',
-              category: data.category || '',
-              tags: data.tags || [],
-              createdAt: data.createdAt || '',
-            });
-          }
-        });
-      } else if (data.title) {
-        // If the document has a direct title field (and no portal filtering needed)
-        if (!portal) {
-          blogContent.push({
-            id: doc.id,
-            title: data.title,
-            content: data.content || '',
-            author: data.author || '',
-            category: data.category || '',
-            tags: data.tags || [],
-            createdAt: data.createdAt || '',
-          });
-        }
+
+    const response = await fetch('/api/business/blog-content', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
+
+    if (!response.ok) {
+      console.error('❌ Backend API failed:', response.status, response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
     
-    console.log(`✅ Fetched blog content for ${portal || 'all portals'}:`, blogContent.length, 'templates');
-    console.log('Blog content titles:', blogContent.map(item => item.title));
+    if (!data.success) {
+      console.error('❌ API returned error:', data.message);
+      return [];
+    }
+
+    const blogContent: BlogContent[] = [];
+    
+    if (data.data && Array.isArray(data.data)) {
+      data.data.forEach((doc: any) => {
+        if (doc.articles) {
+          Object.entries(doc.articles).forEach(([articleId, article]: [string, any]) => {
+            if (article && article.title) {
+              blogContent.push({
+                id: `${doc.id}_${articleId}`,
+                title: article.title,
+                content: article.description || article.outline || '',
+                author: doc.author || '',
+                category: doc.category || '',
+                tags: doc.tags || [],
+                createdAt: doc.createdAt || '',
+              });
+            }
+          });
+        }
+      });
+    }
+    
+    console.log(`✅ Fetched ${blogContent.length} blog content templates via backend API`);
     return blogContent;
   } catch (error) {
-    console.error('❌ Error fetching blog content:', error);
+    console.error('❌ Error fetching blog content via backend API:', error);
     return [];
   }
 };
@@ -111,62 +104,74 @@ export const fetchBlogContent = async (portal?: string): Promise<BlogContent[]> 
 // Fetch keywords from portalKeywords collection with portal filter
 export const fetchKeywords = async (portal?: string): Promise<Keyword[]> => {
   try {
-    console.log(`🔍 Fetching keywords from portalKeywords collection${portal ? ` for portal: ${portal}` : ''}...`);
+    console.log(`🔍 Fetching keywords via backend API${portal ? ` for portal: ${portal}` : ''}...`);
     
-    let querySnapshot;
-    if (portal) {
-      // Filter by portal field matching the portal
-      const q = query(collection(db, 'portalKeywords'), where('portal', '==', portal));
-      querySnapshot = await getDocs(q);
-    } else {
-      // Get all documents if no portal specified
-      querySnapshot = await getDocs(collection(db, 'portalKeywords'));
-    }
-    
-    console.log('📄 Keywords snapshot size:', querySnapshot.size);
-    
-    if (querySnapshot.size === 0) {
-      console.log(`❌ No documents found in portalKeywords collection${portal ? ` for portal: ${portal}` : ''}`);
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      console.error('❌ No authentication token found');
       return [];
     }
-    
-    const keywords: Keyword[] = [];
-    
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      // Handle the keywords array from portalKeywords collection
-      if (data.keywords && Array.isArray(data.keywords)) {
-        data.keywords.forEach((keywordText: string, index: number) => {
-          keywords.push({
-            id: `${doc.id}_${index}`,
-            keyword: keywordText,
-            volume: data.volume || data.searchVolume || 0,
-            difficulty: data.difficulty || 0,
-            rank: data.rank || '',
-            opportunity: data.opportunity || '',
-            intent: data.intent || '',
-            cpc: data.cpc || 0,
-          });
-        });
-      } else if (data.keyword) {
-        // Fallback for single keyword documents
-        keywords.push({
-          id: doc.id,
-          keyword: data.keyword || '',
-          volume: data.volume || data.searchVolume || 0,
-          difficulty: data.difficulty || 0,
-          rank: data.rank || '',
-          opportunity: data.opportunity || '',
-          intent: data.intent || '',
-          cpc: data.cpc || 0,
-        });
+
+    // Use portal-specific endpoint if portal is specified, otherwise get all
+    const endpoint = portal ? '/api/business/keywords/portal' : '/api/business/keywords?type=all';
+
+    const response = await fetch(endpoint, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
+
+    if (!response.ok) {
+      console.error('❌ Keywords API failed:', response.status, response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
     
-    console.log(`✅ Fetched keywords for ${portal || 'all portals'}:`, keywords.length, 'documents');
+    if (!data.success) {
+      console.error('❌ Keywords API returned error:', data.message);
+      return [];
+    }
+
+    const keywords: Keyword[] = [];
+    
+    if (data.data && Array.isArray(data.data)) {
+      data.data.forEach((item: any, index: number) => {
+        // Handle different keyword data structures
+        if (item.keyword) {
+          keywords.push({
+            id: item.id || `keyword_${index}`,
+            keyword: item.keyword,
+            volume: item.volume || item.searchVolume || 0,
+            difficulty: item.difficulty || 0,
+            rank: item.rank || '',
+            opportunity: item.opportunity || '',
+            intent: item.intent || '',
+            cpc: item.cpc || 0,
+          });
+        } else if (item.keywords && Array.isArray(item.keywords)) {
+          // Handle nested keywords structure
+          item.keywords.forEach((keyword: any, keywordIndex: number) => {
+            keywords.push({
+              id: `${item.id || index}_${keywordIndex}`,
+              keyword: typeof keyword === 'string' ? keyword : keyword.keyword,
+              volume: keyword.volume || keyword.searchVolume || 0,
+              difficulty: keyword.difficulty || 0,
+              rank: keyword.rank || '',
+              opportunity: keyword.opportunity || '',
+              intent: keyword.intent || '',
+              cpc: keyword.cpc || 0,
+            });
+          });
+        }
+      });
+    }
+    
+    console.log(`✅ Fetched ${keywords.length} keywords via backend API`);
     return keywords;
   } catch (error) {
-    console.error('❌ Error fetching keywords:', error);
+    console.error('❌ Error fetching keywords via backend API:', error);
     return [];
   }
 };
@@ -313,7 +318,7 @@ export const generateBlogPost = async (
         long_tail_keywords: blogTemplate.long_tail_keywords || [],
         outline: blogTemplate.outline || '',
         visual: blogTemplate.visual || 'AI Generated',
-        website: blogTemplate.website || 'https://newpeople.com'
+        website: blogTemplate.website || getCurrentBranding().website
       } : {})
     };
 

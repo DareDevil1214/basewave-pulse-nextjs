@@ -1,4 +1,5 @@
 import { db } from './firebase';
+import { getCurrentBranding } from './branding';
 import { collection, addDoc } from 'firebase/firestore';
 
 export interface GeneratedOpportunity {
@@ -39,7 +40,7 @@ export const generateOpportunityFromKeyword = async (
       body: JSON.stringify({
         keyword: request.keyword,
         portal: request.portal,
-        website: request.portal === 'newpeople' ? 'https://newpeople.com' : 'https://cv-maker.com'
+        website: getCurrentBranding().website || 'https://basewave.com'
       }),
     });
 
@@ -80,7 +81,7 @@ export const saveOpportunityToFirebase = async (
     console.log(`💾 Saving opportunity to Firebase for portal: ${portal}`);
 
     // Determine the document ID based on portal
-    const documentId = portal === 'newpeople' ? 'new-people-doc-id' : 'cv-maker-doc-id';
+    const documentId = getCurrentBranding().name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-doc-id';
     
     // Get a reference to the compBlogContent collection
     const compBlogContentRef = collection(db, 'compBlogContent');

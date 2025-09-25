@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Bot, X, Loader2, Sparkles, Edit3, Wand2, FileText, Hash, RefreshCw } from 'lucide-react';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { getCurrentBranding } from '@/lib/branding';
 import { fetchKeywords, generateBlogPost, Keyword } from '@/lib/blog-firebase';
 import { 
   generateKeywordsFromTopic, 
@@ -66,45 +65,59 @@ export function BlogGenerationForm({ portal, onClose, onSuccess }: BlogGeneratio
   const [loadingMessage, setLoadingMessage] = useState('');
   const [apiCompleted, setApiCompleted] = useState(false);
   
-  // Fetch blog templates from compBlogContent collection
+  // Fetch blog templates ONLY from backend API
   const fetchCompBlogContent = async (): Promise<CompBlogArticle[]> => {
     try {
-      console.log('🔍 Fetching blog templates from compBlogContent collection...');
+      console.log('🔍 Fetching blog templates via backend API...');
 
-      const q = query(collection(db, 'compBlogContent'));
-      const snapshot = await getDocs(q);
+      const token = localStorage.getItem('jwt_token');
+      if (!token) {
+        console.error('❌ No authentication token found');
+        return [];
+      }
 
-      if (snapshot.empty) {
-        console.error('No documents found in compBlogContent collection');
+      const response = await fetch('/api/business/blog-content', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.error('❌ Backend API failed:', response.status, response.statusText);
+        return [];
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        console.error('❌ API returned error:', data.message);
         return [];
       }
 
       const articles: CompBlogArticle[] = [];
+      
+      if (data.data && Array.isArray(data.data)) {
+        data.data.forEach((doc: any) => {
+          if (doc.articles) {
+            Object.entries(doc.articles).forEach(([articleId, article]: [string, any]) => {
+              if (article && article.title) {
+                articles.push({
+                  ...article,
+                  documentId: doc.id,
+                  articleId
+                });
+              }
+            });
+          }
+        });
+      }
 
-      snapshot.forEach((doc) => {
-        const data = doc.data() as CompBlogContent;
-        const documentId = doc.id;
-
-        // Check if articles exist
-        if (data.articles) {
-          Object.entries(data.articles).forEach(([articleId, article]) => {
-            // Filter by website for both newpeople and cv-maker
-            if (article.website === 'https://newpeople.com' || article.website === 'https://cv-maker.com') {
-              articles.push({
-                ...article,
-                documentId,
-                articleId
-              });
-            }
-          });
-        }
-      });
-
-      console.log(`✅ Found ${articles.length} articles for newpeople and cv-maker websites`);
+      console.log(`✅ Found ${articles.length} blog templates via backend API`);
       return articles;
 
     } catch (error) {
-      console.error('❌ Error fetching compBlogContent:', error);
+      console.error('❌ Error fetching blog content via backend API:', error);
       return [];
     }
   };

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { getCurrentBranding } from '@/lib/branding';
 import { formatNumber } from '@/hooks/useKeywordStrategies';
 
 interface KeywordTabProps {
@@ -39,23 +40,24 @@ export function KeywordTab({
   // Use Firebase best_keywords data for CV Maker tab
   const keywordsToDisplay: any[] = firebaseBestKeywords;
 
-  // Add state for New People keywords from portalKeywords collection
-  const [newpeopleKeywords, setNewpeopleKeywords] = useState<any[]>([]);
+  // Add state for current business keywords from portalKeywords collection
+  const [businessKeywords, setBusinessKeywords] = useState<any[]>([]);
   const [portalLoading, setPortalLoading] = useState(false);
 
-  // Fetch keywords from portalKeywords collection for New People tab
-  const fetchNewpeopleKeywords = async () => {
+  // Fetch keywords from portalKeywords collection for current business tab
+  const fetchBusinessKeywords = async () => {
     setPortalLoading(true);
     try {
-      console.log('🔍 Fetching newpeople keywords from portalKeywords collection...');
+      console.log('🔍 Fetching business keywords from portalKeywords collection...');
 
-      // Query the portalKeywords collection for documents with portal = "newpeople"
-      const q = query(collection(db, 'portalKeywords'), where('portal', '==', 'newpeople'));
+      // Query the portalKeywords collection for documents with current business portal
+      const currentPortal = getCurrentBranding().name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'basewave';
+      const q = query(collection(db, 'portalKeywords'), where('portal', '==', currentPortal));
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-        console.log('⚠️ No newpeople keywords found in portalKeywords collection');
-        setNewpeopleKeywords([]);
+        console.log('⚠️ No business keywords found in portalKeywords collection');
+        setBusinessKeywords([]);
         return;
       }
 
@@ -85,21 +87,21 @@ export function KeywordTab({
         });
       });
 
-      console.log(`✅ Found ${keywords.length} newpeople keywords`);
-      setNewpeopleKeywords(keywords);
+      console.log(`✅ Found ${keywords.length} business keywords`);
+      setBusinessKeywords(keywords);
 
     } catch (error) {
-      console.error('❌ Error fetching newpeople keywords:', error);
-      setNewpeopleKeywords([]);
+      console.error('❌ Error fetching business keywords:', error);
+      setBusinessKeywords([]);
     } finally {
       setPortalLoading(false);
     }
   };
 
-  // Fetch newpeople keywords when tab changes to New People
+  // Fetch business keywords when tab changes to current business
   useEffect(() => {
-    if (selectedFilter === 'New People') {
-      fetchNewpeopleKeywords();
+    if (selectedFilter === getCurrentBranding().name) {
+      fetchBusinessKeywords();
     }
   }, [selectedFilter]);
 
@@ -107,11 +109,11 @@ export function KeywordTab({
   const filteredKeywords = useMemo(() => {
     if (selectedFilter === 'CV Maker') {
       return keywordsToDisplay; // From best_keywords collection
-    } else if (selectedFilter === 'New People') {
-      return newpeopleKeywords; // From portalKeywords collection
+    } else if (selectedFilter === getCurrentBranding().name) {
+      return businessKeywords; // From portalKeywords collection
     }
     return [];
-  }, [keywordsToDisplay, newpeopleKeywords, selectedFilter]);
+  }, [keywordsToDisplay, businessKeywords, selectedFilter]);
 
 
   return (
@@ -156,17 +158,17 @@ export function KeywordTab({
             </button>
             <button
               className={`px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-                selectedFilter === 'New People'
+                selectedFilter === getCurrentBranding().name
                   ? 'bg-black text-white shadow-sm'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
               onClick={() => {
                 if (onTabChange) {
-                  onTabChange('New People');
+                  onTabChange(getCurrentBranding().name);
                 }
               }}
             >
-              New People
+              {getCurrentBranding().name}
             </button>
           </div>
         </div>
@@ -192,7 +194,7 @@ export function KeywordTab({
 
         {/* Loading State */}
         {((selectedFilter === 'CV Maker' && firebaseLoading) ||
-          (selectedFilter === 'New People' && portalLoading)) && (
+          (selectedFilter === getCurrentBranding().name && portalLoading)) && (
           <div className="space-y-6">
             {/* Header Skeleton */}
             <div className="bg-white border border-gray-200 rounded-xl p-6">
@@ -249,7 +251,7 @@ export function KeywordTab({
         {/* Empty State */}
         {filteredKeywords.length === 0 &&
           ((selectedFilter === 'CV Maker' && !firebaseLoading) ||
-           (selectedFilter === 'New People' && !portalLoading)) && (
+           (selectedFilter === getCurrentBranding().name && !portalLoading)) && (
           <div>
             <div className="bg-white border border-gray-200 rounded-xl p-16 text-center">
               <div className="flex flex-col items-center gap-4">
@@ -258,12 +260,12 @@ export function KeywordTab({
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-xl font-semibold text-gray-900">
-                    {selectedFilter === 'CV Maker' ? 'No CV Maker Keywords' : 'No New People Keywords'}
+                    {selectedFilter === 'CV Maker' ? 'No CV Maker Keywords' : `No ${getCurrentBranding().name} Keywords`}
                   </h3>
                   <p className="text-gray-600">
                     {selectedFilter === 'CV Maker'
                       ? 'No keywords found in the best_keywords collection.'
-                      : 'No keywords found for New People portal in portalKeywords collection.'
+                      : `No keywords found for ${getCurrentBranding().name} portal in portalKeywords collection.`
                     }
                   </p>
                 </div>
@@ -276,9 +278,9 @@ export function KeywordTab({
                     Refresh Data
                   </Button>
                 )}
-                {selectedFilter === 'New People' && (
+                {selectedFilter === getCurrentBranding().name && (
                   <Button
-                    onClick={() => fetchNewpeopleKeywords()}
+                    onClick={() => fetchBusinessKeywords()}
                     className="mt-4 bg-black text-white hover:bg-gray-800 rounded-xl"
                   >
                     <RefreshCw className="h-4 w-4 mr-2" />
@@ -476,7 +478,7 @@ export function KeywordTab({
               </div>
             </div>
           ) : (
-            /* Empty state for New People */
+            /* Empty state for Business */
             <div>
               <div className="bg-white border border-gray-200 rounded-xl p-16 text-center">
                 <div className="flex flex-col items-center gap-4">
@@ -485,10 +487,10 @@ export function KeywordTab({
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-gray-900">No Keywords Available</h3>
-                    <p className="text-gray-600">No keyword data found for New People portal.</p>
+                    <p className="text-gray-600">No keyword data found for {getCurrentBranding().name} portal.</p>
                   </div>
                   <Button
-                    onClick={() => fetchNewpeopleKeywords()}
+                    onClick={() => fetchBusinessKeywords()}
                     className="mt-4 bg-black text-white hover:bg-gray-800 rounded-xl"
                   >
                     <RefreshCw className="h-4 w-4 mr-2" />
@@ -500,8 +502,8 @@ export function KeywordTab({
           )
         )}
 
-        {/* New People Tab */}
-        {selectedFilter === 'New People' && (
+        {/* Business Tab */}
+        {selectedFilter === getCurrentBranding().name && (
           /* New People - Keywords from portalKeywords collection */
           filteredKeywords.length > 0 ? (
             <div>
@@ -686,7 +688,7 @@ export function KeywordTab({
               </div>
             </div>
           ) : (
-            /* Empty state for New People */
+            /* Empty state for Business */
             <div>
               <div className="bg-white border border-gray-200 rounded-xl p-16 text-center">
                 <div className="flex flex-col items-center gap-4">
@@ -695,10 +697,10 @@ export function KeywordTab({
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-gray-900">No Keywords Available</h3>
-                    <p className="text-gray-600">No keyword data found for New People portal.</p>
+                    <p className="text-gray-600">No keyword data found for {getCurrentBranding().name} portal.</p>
                   </div>
                   <Button
-                    onClick={() => fetchNewpeopleKeywords()}
+                    onClick={() => fetchBusinessKeywords()}
                     className="mt-4 bg-black text-white hover:bg-gray-800 rounded-xl"
                   >
                     <RefreshCw className="h-4 w-4 mr-2" />

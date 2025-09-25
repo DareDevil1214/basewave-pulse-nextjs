@@ -27,7 +27,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const checkSession = () => {
       try {
-        const sessionToken = localStorage.getItem('desert_recovery_session');
+        const sessionToken = localStorage.getItem('basewave_session');
         
         if (sessionToken) {
           const sessionUser = validateSession(sessionToken);
@@ -36,13 +36,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log('Session restored from localStorage');
           } else {
             // Session expired or invalid, clear it
-            localStorage.removeItem('desert_recovery_session');
+            localStorage.removeItem('basewave_session');
             console.log('Session expired, cleared from localStorage');
           }
         }
       } catch (error) {
         console.error('Error checking session:', error);
-        localStorage.removeItem('desert_recovery_session');
+        localStorage.removeItem('basewave_session');
       } finally {
         setIsLoading(false);
       }
@@ -52,13 +52,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Check session validity every 5 minutes while app is running
     const sessionCheckInterval = setInterval(() => {
-      const sessionToken = localStorage.getItem('desert_recovery_session');
+      const sessionToken = localStorage.getItem('basewave_session');
       if (sessionToken) {
         const sessionUser = validateSession(sessionToken);
         if (!sessionUser) {
           console.log('Session expired during runtime, logging out');
           setUser(null);
-          localStorage.removeItem('desert_recovery_session');
+          localStorage.removeItem('basewave_session');
         }
       }
     }, 5 * 60 * 1000); // 5 minutes
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = (userData: User) => {
     // Create and store session token for 24-hour persistence
     const sessionToken = createSession(userData);
-    localStorage.setItem('desert_recovery_session', sessionToken);
+    localStorage.setItem('basewave_session', sessionToken);
     setUser(userData);
     console.log('User logged in, session created for 24 hours');
   };
@@ -110,7 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     // Clear user data immediately
     setUser(null);
-    localStorage.removeItem('desert_recovery_session');
+    localStorage.removeItem('basewave_session');
   };
 
   const value: AuthContextType = {
