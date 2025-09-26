@@ -18,12 +18,13 @@ export async function POST(request: NextRequest) {
     const businessName = formData.get('businessName') as string;
     const businessDescription = formData.get('businessDescription') as string;
     const mainKeywords = formData.get('mainKeywords') as string;
-    const businessId = formData.get('businessId') as string;
+    const websiteUrl = formData.get('websiteUrl') as string;
+    const competitorUrls = formData.get('competitorUrls') as string;
     const logo = formData.get('logo') as File | null;
 
-    if (!businessName || !businessDescription || !mainKeywords || !businessId) {
+    if (!businessName || !businessDescription || !mainKeywords) {
       return NextResponse.json(
-        { success: false, message: 'Business name, description, keywords, and business ID are required' },
+        { success: false, message: 'Business name, description, and keywords are required' },
         { status: 400 }
       );
     }
@@ -33,7 +34,14 @@ export async function POST(request: NextRequest) {
     backendFormData.append('businessName', businessName);
     backendFormData.append('businessDescription', businessDescription);
     backendFormData.append('mainKeywords', mainKeywords);
-    backendFormData.append('businessId', businessId);
+    
+    // Add optional fields with defaults if not provided
+    if (websiteUrl) {
+      backendFormData.append('websiteUrl', websiteUrl);
+    }
+    if (competitorUrls) {
+      backendFormData.append('competitorUrls', competitorUrls);
+    }
 
     if (logo && logo.size > 0) {
       backendFormData.append('logo', logo);

@@ -26,8 +26,10 @@ import { Button } from '@/components/ui/button';
 import PublishButton from '../ui/publish-button';
 import DeleteButton from '../ui/delete-button';
 import { motion } from 'framer-motion';
-import { db, extractSocialMediaUrl } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { extractSocialMediaUrl } from '@/lib/firebase';
+// Note: Firebase db dependency removed - using backend API instead
+// import { db } from '@/lib/firebase';
+// import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { createPortal } from 'react-dom';
 import React from 'react'; // Added missing import for React
 

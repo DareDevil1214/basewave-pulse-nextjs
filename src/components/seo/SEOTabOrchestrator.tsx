@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  fetchKeywordRankings,
   calculateRankingAnalytics,
   getTopKeywordsFromRankings,
 } from '@/lib/firebase';
+import { fetchKeywordsFromBackend } from '@/lib/backend-api';
 import { getCurrentBranding } from '@/lib/branding';
 
 import { KeywordTab } from './KeywordTab';
@@ -33,16 +33,27 @@ export function SEOTabOrchestrator({
   const [rankingLoading, setRankingLoading] = useState(false);
   const [rankingError, setRankingError] = useState<string | null>(null);
 
-  // Fetch ranking data from Firebase
+  // Fetch ranking data from backend API
   const fetchRankingData = async () => {
     setRankingLoading(true);
     setRankingError(null);
     
     try {
-      console.log('🔄 Fetching ranking data from Firebase...');
+      console.log('🔄 Fetching ranking data from backend API...');
       
-      const rankings = await fetchKeywordRankings();
-      console.log(`✅ Fetched ${rankings.length} rankings from Firebase`);
+      // For now, we'll use the keywords data as ranking data
+      // In the future, this should be a dedicated rankings endpoint
+      const keywords = await fetchKeywordsFromBackend();
+      const rankings = keywords.map(keyword => ({
+        keyword: keyword.keyword,
+        currentPosition: keyword.position || 0,
+        found: keyword.position > 0,
+        createdAt: keyword.createdAt,
+        visibilityScore: keyword.seoScore || 0,
+        searchVolume: keyword.searchVolume || 0,
+        difficulty: keyword.difficulty || 0
+      }));
+      console.log(`✅ Fetched ${rankings.length} rankings from backend API`);
       
       if (rankings.length > 0) {
         const analytics = calculateRankingAnalytics(rankings);

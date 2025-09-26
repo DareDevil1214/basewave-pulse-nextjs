@@ -1,12 +1,14 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, validateSession, signOutFromFirebase, createSession, refreshSession } from '@/lib/auth';
+import { User, validateSession, signOut, createSession, refreshSession } from '@/lib/auth';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  onboardingComplete: boolean | null;
+  checkOnboardingStatus: () => Promise<void>;
   login: (user: User) => void;
   logout: () => void;
 }
@@ -22,6 +24,37 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
+
+  // Check onboarding status
+  const checkOnboardingStatus = async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      if (!token) {
+        setOnboardingComplete(null);
+        return;
+      }
+
+      const response = await fetch('/api/auth/onboarding-status', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📊 Onboarding status response:', data);
+        setOnboardingComplete(data.data.onboardingComplete);
+      } else {
+        console.log('❌ Onboarding status check failed:', response.status);
+        setOnboardingComplete(false);
+      }
+    } catch (error) {
+      console.error('Error checking onboarding status:', error);
+      setOnboardingComplete(false);
+    }
+  };
 
   // Check for existing session on mount and set up periodic validation
   useEffect(() => {
@@ -34,6 +67,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (sessionUser) {
             setUser(sessionUser);
             console.log('Session restored from localStorage');
+            // Check onboarding status when user is authenticated
+            checkOnboardingStatus();
           } else {
             // Session expired or invalid, clear it
             localStorage.removeItem('basewave_session');
@@ -100,13 +135,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.setItem('basewave_session', sessionToken);
     setUser(userData);
     console.log('User logged in, session created for 24 hours');
+    // Check onboarding status after login
+    checkOnboardingStatus();
   };
 
   const logout = async () => {
-    // Sign out from Firebase if user has Firebase auth
-    if (user?.firebaseUser) {
-      await signOutFromFirebase();
-    }
+    // Sign out from backend API
+    await signOut();
     
     // Clear user data immediately
     setUser(null);
@@ -117,6 +152,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     isAuthenticated: !!user,
     isLoading,
+    onboardingComplete,
+    checkOnboardingStatus,
     login,
     logout
   };

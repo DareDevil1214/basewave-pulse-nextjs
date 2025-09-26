@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Users, Mail, Phone, Calendar, Building, MoreVertical, Trash2, CheckCircle, XCircle, Clock, Star, UserCheck } from 'lucide-react';
-import { fetchLeadsFromFirebase, updateLeadStatus, deleteLead } from '@/lib/firebase';
+// Note: Lead management will be handled through backend API
+// import { fetchLeadsFromFirebase, updateLeadStatus, deleteLead } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -43,7 +44,8 @@ export default function LeadsPage() {
   const fetchLeads = async () => {
     try {
       setLoading(true);
-      const leadsData = await fetchLeadsFromFirebase();
+      // Mock data for now - will be replaced with backend API call
+      const leadsData: Lead[] = [];
       
       // Add default status to leads that don't have one
       // Firebase already sorts by createdAt (newest first)
@@ -168,7 +170,8 @@ export default function LeadsPage() {
       );
       
       // Update in Firebase
-      await updateLeadStatus(leadId, newStatus);
+      // Mock implementation - will be replaced with backend API call
+      console.log(`Updating lead ${leadId} status to ${newStatus}`);
       
       // Show success notification
       setNotification({ type: 'success', message: `Lead status updated to ${newStatus}` });
@@ -206,7 +209,8 @@ export default function LeadsPage() {
     
     try {
       // Delete from Firebase
-      await deleteLead(leadId);
+      // Mock implementation - will be replaced with backend API call
+      console.log(`Deleting lead ${leadId}`);
       
       // Remove from local state
       setLeads(prev => prev.filter(lead => lead.id !== leadId));

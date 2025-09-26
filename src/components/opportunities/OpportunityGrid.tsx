@@ -6,8 +6,9 @@ import { Article } from '@/lib/opportunities-firebase';
 import { OpportunityCard } from './OpportunityCard';
 import { OpportunityCardMobile } from './OpportunityCardMobile';
 import { Target, FileText, Plus, X, Save, Loader2, Hash, Globe, Edit3 } from 'lucide-react';
-import { db } from '@/lib/firebase';
-import { collection, doc, setDoc, getDocs, query } from 'firebase/firestore';
+// Note: Firebase dependencies removed - using backend API instead
+// import { db } from '@/lib/firebase';
+// import { collection, doc, setDoc, getDocs, query } from 'firebase/firestore';
 
 interface OpportunityGridProps {
   articles: Article[];

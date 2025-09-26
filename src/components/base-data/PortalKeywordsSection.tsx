@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Edit, Save, X, Loader2, CheckCircle, Trash2, Plus, Sparkles } from 'lucide-react';
-import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
+// Note: Firebase dependencies removed - using backend API instead
+// import { db } from '@/lib/firebase';
+// import { collection, query, where, getDocs, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { getCurrentBranding } from '@/lib/branding';
 import { generateAndSaveOpportunity } from '@/lib/opportunity-generator';
 import { SuccessToast } from '@/components/ui/SuccessToast';

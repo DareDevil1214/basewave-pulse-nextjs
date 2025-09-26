@@ -10,8 +10,9 @@ import {
   Loader2
 
 } from 'lucide-react';
-import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+// Note: Firebase dependencies removed - using backend API instead
+// import { db } from '@/lib/firebase';
+// import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getCurrentBranding } from '@/lib/branding';
 import { formatNumber } from '@/hooks/useKeywordStrategies';
 
@@ -44,51 +45,40 @@ export function KeywordTab({
   const [businessKeywords, setBusinessKeywords] = useState<any[]>([]);
   const [portalLoading, setPortalLoading] = useState(false);
 
-  // Fetch keywords from portalKeywords collection for current business tab
+  // Fetch keywords from backend API for current business tab
   const fetchBusinessKeywords = async () => {
     setPortalLoading(true);
     try {
-      console.log('🔍 Fetching business keywords from portalKeywords collection...');
+      console.log('🔍 Fetching business keywords from backend API...');
 
-      // Query the portalKeywords collection for documents with current business portal
-      const currentPortal = getCurrentBranding().name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'basewave';
-      const q = query(collection(db, 'portalKeywords'), where('portal', '==', currentPortal));
-      const snapshot = await getDocs(q);
-
-      if (snapshot.empty) {
-        console.log('⚠️ No business keywords found in portalKeywords collection');
+      // Get keywords from backend API
+      const keywords = await fetchKeywordsFromBackend('portal');
+      
+      if (!keywords || keywords.length === 0) {
+        console.log('⚠️ No business keywords found from backend API');
         setBusinessKeywords([]);
         return;
       }
 
-      const keywords: any[] = [];
+      // Convert keywords to the expected format
+      const formattedKeywords = keywords.map((keyword, index) => ({
+        id: keyword.id || `keyword_${index}`,
+        keyword: keyword.keyword,
+        volume: keyword.volume || 0,
+        difficulty: keyword.difficulty || 0,
+        opportunity: keyword.opportunity || 'Medium',
+        intent: keyword.intent || 'Commercial',
+        cpc: keyword.cpc || 0,
+        position: keyword.position || 0,
+        seoScore: keyword.seoScore || 0,
+        searchVolume: keyword.searchVolume || 0,
+        trafficEstimate: keyword.trafficEstimate || 0,
+        competition: keyword.competition || 'unknown',
+        serpFeatures: keyword.serpFeatures || []
+      }));
 
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const keywordList = data.keywords || [];
-
-        // Convert each keyword in the array to the expected format
-        keywordList.forEach((keyword: string, index: number) => {
-          keywords.push({
-            id: `${doc.id}_${index}`,
-            keyword: keyword,
-            volume: 0, // Default values since not provided in collection
-            difficulty: 0,
-            opportunity: 'Medium',
-            intent: 'Commercial',
-            cpc: 0,
-            position: 0,
-            seoScore: 0,
-            searchVolume: 0,
-            trafficEstimate: 0,
-            competition: 'unknown',
-            serpFeatures: []
-          });
-        });
-      });
-
-      console.log(`✅ Found ${keywords.length} business keywords`);
-      setBusinessKeywords(keywords);
+      console.log(`✅ Found ${formattedKeywords.length} business keywords`);
+      setBusinessKeywords(formattedKeywords);
 
     } catch (error) {
       console.error('❌ Error fetching business keywords:', error);

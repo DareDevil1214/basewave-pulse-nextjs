@@ -9,6 +9,7 @@ import { CombinedGenerationForm } from '@/components/combined-agent';
 import { BlogPostsTable } from './BlogPostsTable';
 import { BlogSchedulerTab } from './BlogSchedulerTab';
 import { getPortalLink } from '@/lib/social-links';
+import { getCurrentBranding } from '@/lib/branding';
 
 interface BlogPortalProps {
   portal: 'newpeople';
@@ -26,7 +27,7 @@ const PORTAL_CONFIGS: Record<string, PortalConfig> = {
   newpeople: {
     name: 'newpeople',
     displayName: 'New People',
-    logo: '/logo-load.webp',
+    logo: '/logo-load.webp', // Fallback logo
     description: 'Create and manage content for your New People portal'
   }
 };
@@ -38,6 +39,9 @@ export function BlogPortal({ portal, onChangeBlog }: BlogPortalProps) {
   const [activeTab, setActiveTab] = useState<'posts' | 'scheduler'>('posts');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Get user's business branding
+  const branding = getCurrentBranding();
   const [contentReady, setContentReady] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -177,7 +181,7 @@ export function BlogPortal({ portal, onChangeBlog }: BlogPortalProps) {
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Blog Content</h1>
-              <p className="text-gray-600 text-base md:text-lg">{config.description}</p>
+              <p className="text-gray-600 text-base md:text-lg">Create and manage content for your {branding.name || config.displayName} portal</p>
             </motion.div>
 
             {/* Controls */}
@@ -195,8 +199,8 @@ export function BlogPortal({ portal, onChangeBlog }: BlogPortalProps) {
                     transition={{ duration: 0.2 }}
                   >
                     <img 
-                      src={config.logo}
-                      alt={`${config.displayName} logo`}
+                      src={branding.logoUrl || config.logo}
+                      alt={`${branding.name || config.displayName} logo`}
                       className="w-full h-full object-contain"
                     />
                   </motion.div>
@@ -236,7 +240,7 @@ export function BlogPortal({ portal, onChangeBlog }: BlogPortalProps) {
                     <span className="font-medium">Open Scheduler</span>
                   </Button>
                 </motion.div>
-                
+
                 <div className="relative" ref={dropdownRef}>
                   <motion.div
                     whileHover={{ scale: 1.02 }}

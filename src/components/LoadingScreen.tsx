@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { getCurrentBranding } from '@/lib/branding';
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;
@@ -9,6 +10,7 @@ interface LoadingScreenProps {
 
 export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const branding = getCurrentBranding();
 
   useEffect(() => {
     // Show loading screen for 2 seconds
@@ -29,8 +31,8 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
         <div className="text-center animate-scale-out">
           <div className="relative mb-6 animate-logo-out">
                       <Image
-            src="/logo-load.webp"
-            alt="New People Logo"
+            src={branding.logoUrl || "/logo-load.webp"}
+            alt={`${branding.name} Logo`}
             width={180}
             height={180}
             className="mx-auto drop-shadow-lg"
@@ -52,8 +54,8 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
         <div className="relative mb-6 animate-logo-entrance">
           <div className="absolute inset-0 bg-gray-200/20 rounded-full blur-xl animate-pulse-slow"></div>
           <Image
-            src="/logo-load.webp"
-            alt="New People Logo"
+            src={branding.logoUrl || "/logo-load.webp"}
+            alt={`${branding.name} Logo`}
             width={180}
             height={180}
             className="relative mx-auto drop-shadow-lg animate-float"

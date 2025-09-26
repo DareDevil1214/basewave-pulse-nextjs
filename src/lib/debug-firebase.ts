@@ -1,6 +1,7 @@
 // Debug utility for testing Firebase data fetching
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from './firebase';
+// Note: Firebase dependencies removed - using backend API instead
+// import { collection, getDocs } from 'firebase/firestore';
+// import { db } from './firebase';
 import { getNormalizedPortalName } from './portal-mapping';
 
 // Debug function to inspect the actual structure of compBlogContent collection

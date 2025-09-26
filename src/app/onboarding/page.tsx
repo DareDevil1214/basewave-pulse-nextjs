@@ -20,7 +20,7 @@ interface OnboardingData {
 }
 
 export default function OnboardingPage() {
-  const { user } = useAuth();
+  const { user, checkOnboardingStatus } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState<OnboardingData>({
     businessName: '',
@@ -67,23 +67,60 @@ export default function OnboardingPage() {
     setIsSubmitting(true);
 
     try {
-      // TODO: Implement API call to update business data
-      // For now, just update localStorage and redirect
+      const token = localStorage.getItem('jwt_token');
+      if (!token) {
+        toast.error('Authentication token not found');
+        return;
+      }
+
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('businessName', formData.businessName);
+      formDataToSend.append('businessDescription', formData.businessDescription);
+      formDataToSend.append('mainKeywords', formData.mainKeywords);
+      // businessId is no longer required - backend will use userId
+      formDataToSend.append('websiteUrl', 'https://example.com'); // Default URL
+      formDataToSend.append('competitorUrls', 'https://competitor1.com,https://competitor2.com'); // Default competitors
+
+      // Add logo if provided
+      if (formData.businessLogo) {
+        formDataToSend.append('logo', formData.businessLogo);
+      }
+
+      const response = await fetch('/api/onboarding', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to complete onboarding');
+      }
+
+      // Update local user data with the response
       const updatedUserData = {
         ...JSON.parse(localStorage.getItem('user_data') || '{}'),
         businessName: formData.businessName,
         description: formData.businessDescription,
         mainKeywords: formData.mainKeywords,
-        onboardingCompleted: true
+        logoUrl: data.data?.logoUrl || null,
+        onboardingComplete: true
       };
       
       localStorage.setItem('user_data', JSON.stringify(updatedUserData));
       
-      toast.success('Business setup completed!');
+      // Refresh onboarding status in AuthContext
+      await checkOnboardingStatus();
+      
+      toast.success('Business setup completed successfully!');
       router.push('/dashboard');
     } catch (error) {
       console.error('Error updating business data:', error);
-      toast.error('Failed to update business data');
+      toast.error(error instanceof Error ? error.message : 'Failed to update business data');
     } finally {
       setIsSubmitting(false);
     }

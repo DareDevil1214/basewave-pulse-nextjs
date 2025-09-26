@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Target, TrendingUp, Search } from 'lucide-react';
 import { SEOTabOrchestrator } from '@/components/seo/SEOTabOrchestrator';
-import { fetchBestKeywords, BestKeyword } from '@/lib/firebase';
+import { BestKeyword } from '@/lib/firebase';
+import { fetchKeywordsFromBackend } from '@/lib/backend-api';
 
 export default function SEOPage() {
   const searchParams = useSearchParams();
@@ -34,14 +35,14 @@ export default function SEOPage() {
     setFirebaseLoading(true);
     setFirebaseError(null);
     try {
-      const bestKeywords = await fetchBestKeywords();
+      const bestKeywords = await fetchKeywordsFromBackend();
       
       setFirebaseBestKeywords(bestKeywords);
       
-      console.log(`✅ Firebase data loaded: ${bestKeywords.length} best keywords`);
+      console.log(`✅ Backend data loaded: ${bestKeywords.length} best keywords`);
       setLastRefreshTime(new Date().toLocaleTimeString());
     } catch (error: any) {
-      console.error('❌ Error loading Firebase data:', error);
+      console.error('❌ Error loading backend data:', error);
       setFirebaseError(error.message || 'Failed to load data');
     } finally {
       setFirebaseLoading(false);

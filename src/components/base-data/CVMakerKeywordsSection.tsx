@@ -15,9 +15,8 @@ import {
   Sparkles,
   Globe
 } from 'lucide-react';
-import { db } from '@/lib/firebase';
-import { collection, query, getDocs, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { BestKeyword } from '@/lib/firebase';
+import { fetchKeywordsFromBackend, addKeywordToBackend, updateKeywordInBackend, deleteKeywordFromBackend } from '@/lib/backend-api';
 import { formatNumber } from '@/hooks/useKeywordStrategies';
 import { generateAndSaveOpportunity } from '@/lib/opportunity-generator';
 import { CompetitorKeywordModal } from './CompetitorKeywordModal';
@@ -44,50 +43,38 @@ export function CVMakerKeywordsSection({ portal = 'cv-maker' }: CVMakerKeywordsS
   const [showCompetitorModal, setShowCompetitorModal] = useState(false);
   const editRef = useRef<HTMLDivElement>(null);
 
-  // Fetch keywords from best_keywords collection
+  // Fetch keywords from backend API
   const fetchKeywords = async () => {
     setLoading(true);
     try {
-      console.log('🔍 Fetching keywords from best_keywords collection...');
+      console.log('🔍 Fetching keywords from backend API...');
 
-      const q = query(collection(db, 'best_keywords'));
-      const snapshot = await getDocs(q);
+      const keywordsData = await fetchKeywordsFromBackend();
 
-      if (snapshot.empty) {
-        console.log('⚠️ No keywords found in best_keywords collection');
+      if (!keywordsData || keywordsData.length === 0) {
+        console.log('⚠️ No keywords found from backend API');
         setKeywords([]);
         return;
       }
 
-      const keywordsData: BestKeyword[] = [];
-
-      snapshot.forEach((docSnapshot) => {
-        const data = docSnapshot.data() as BestKeyword;
-        keywordsData.push({
-          id: docSnapshot.id,
-          ...data
-        });
-      });
-
-      console.log(`✅ Found ${keywordsData.length} keywords in best_keywords collection`);
+      console.log(`✅ Found ${keywordsData.length} keywords from backend API`);
       setKeywords(keywordsData);
 
     } catch (error) {
-      console.error('❌ Error fetching keywords from best_keywords:', error);
+      console.error('❌ Error fetching keywords from backend:', error);
       setKeywords([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Add new keyword to best_keywords collection
+  // Add new keyword via backend API
   const handleAddKeyword = async () => {
     if (!newKeyword.trim()) return;
 
     setUpdating(true);
     try {
-      const newDocRef = doc(collection(db, 'best_keywords'));
-      await setDoc(newDocRef, {
+      const keywordData = {
         keyword: newKeyword.trim(),
         volume: 0,
         difficulty: 0,
@@ -101,7 +88,9 @@ export function CVMakerKeywordsSection({ portal = 'cv-maker' }: CVMakerKeywordsS
         competition: 'unknown',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
-      });
+      };
+
+      await addKeywordToBackend(keywordData);
 
       setNewKeyword('');
       setShowAddForm(false);
@@ -113,15 +102,16 @@ export function CVMakerKeywordsSection({ portal = 'cv-maker' }: CVMakerKeywordsS
     }
   };
 
-  // Update keyword in best_keywords collection
+  // Update keyword via backend API
   const handleUpdateKeyword = async (keywordId: string, newKeyword: string) => {
     setUpdating(true);
     try {
-      const docRef = doc(db, 'best_keywords', keywordId);
-      await updateDoc(docRef, {
+      const updateData = {
         keyword: newKeyword.trim(),
         updatedAt: new Date().toISOString()
-      });
+      };
+
+      await updateKeywordInBackend(keywordId, updateData);
 
       await fetchKeywords();
     } catch (error) {
@@ -131,12 +121,11 @@ export function CVMakerKeywordsSection({ portal = 'cv-maker' }: CVMakerKeywordsS
     }
   };
 
-  // Delete keyword from best_keywords collection
+  // Delete keyword via backend API
   const handleDeleteKeyword = async (keywordId: string) => {
     setDeletingId(keywordId);
     try {
-      const docRef = doc(db, 'best_keywords', keywordId);
-      await deleteDoc(docRef);
+      await deleteKeywordFromBackend(keywordId);
 
       await fetchKeywords();
     } catch (error) {
@@ -205,10 +194,9 @@ export function CVMakerKeywordsSection({ portal = 'cv-maker' }: CVMakerKeywordsS
         trends: []
       }));
 
-      // Add each keyword to the best_keywords collection
+      // Add each keyword via backend API
       for (const bestKeyword of bestKeywords) {
-        const docRef = doc(collection(db, 'best_keywords'));
-        await setDoc(docRef, bestKeyword);
+        await addKeywordToBackend(bestKeyword);
       }
 
       await fetchKeywords();

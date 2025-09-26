@@ -7,27 +7,18 @@ import { LoginPage } from '@/components/LoginPage';
 import { LoadingScreen } from '@/components/LoadingScreen';
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, onboardingComplete } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      // Check if user needs onboarding
-      const userData = localStorage.getItem('user_data');
-      if (userData) {
-        try {
-          const parsed = JSON.parse(userData);
-          if (!parsed.onboardingCompleted) {
-            router.push('/onboarding');
-            return;
-          }
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-        }
+    if (!isLoading && isAuthenticated && onboardingComplete !== null) {
+      if (!onboardingComplete) {
+        router.push('/onboarding');
+        return;
       }
       router.push('/dashboard');
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, onboardingComplete, router]);
 
   if (isLoading) {
     return <LoadingScreen onLoadingComplete={() => {}} />;

@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { ModernDashboardLayout } from '@/components/ui/modern-dashboard-layout';
+import { OnboardingGuard } from '@/components/OnboardingGuard';
 
 const getPageInfo = (pathname: string) => {
   if (pathname === '/dashboard') {
@@ -51,11 +52,13 @@ export default function DashboardLayout({
   const pageInfo = getPageInfo(pathname);
 
   return (
-    <ModernDashboardLayout 
-      pageTitle={pageInfo.title}
-      pageDescription={pageInfo.description}
-    >
-      {children}
-    </ModernDashboardLayout>
+    <OnboardingGuard>
+      <ModernDashboardLayout 
+        pageTitle={pageInfo.title}
+        pageDescription={pageInfo.description}
+      >
+        {children}
+      </ModernDashboardLayout>
+    </OnboardingGuard>
   );
 }

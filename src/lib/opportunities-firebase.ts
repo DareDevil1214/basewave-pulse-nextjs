@@ -1,5 +1,6 @@
-import { db } from './firebase';
-import { collection, getDocs, query, where, deleteDoc, updateDoc, doc } from 'firebase/firestore';
+// Note: Firebase dependencies removed - using backend API instead
+// import { db } from './firebase';
+// import { collection, getDocs, query, where, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 import { getCurrentBranding } from './branding';
 
 export interface Article {

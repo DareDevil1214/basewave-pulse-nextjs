@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Loader2 } from 'lucide-react';
-import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+// Note: Firebase dependencies removed - using backend API instead
+// import { db } from '@/lib/firebase';
+// import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { PortalConfigCard } from './PortalConfigCard';
 import { PortalConfigEditSidebar } from './PortalConfigEditSidebar';
 

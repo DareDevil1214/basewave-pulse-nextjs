@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
 import {
-  fetchBestKeywords,
-  fetchSocialPostsFromFirebase,
-  fetchBlogPostsFromFirebase,
-  fetchBlogSchedules,
-  fetchSocialScheduledPosts,
   BestKeyword
 } from '@/lib/firebase';
 import { fetchBlogPosts } from '@/lib/blog-posts';
+import { fetchKeywordsFromBackend } from '@/lib/backend-api';
 
 interface DashboardMetrics {
   totalBlogs: number;
@@ -70,22 +66,20 @@ export function useDashboardData() {
     try {
       setLoading(true);
 
-      // Fetch all real data from Firebase and APIs
+      // Fetch all data from backend APIs
       const [
         bestKeywords,
-        blogContent,
-        socialPostsFromFirebase,
-        blogPostsFromFirebase,
-        blogSchedules,
-        socialScheduledPosts
+        blogContent
       ] = await Promise.all([
-        fetchBestKeywords().catch(() => []),
-        fetchBlogPosts().catch(() => []),
-        fetchSocialPostsFromFirebase().catch(() => []),
-        fetchBlogPostsFromFirebase().catch(() => []),
-        fetchBlogSchedules().catch(() => []),
-        fetchSocialScheduledPosts().catch(() => [])
+        fetchKeywordsFromBackend('best').catch(() => []),
+        fetchBlogPosts().catch(() => [])
       ]);
+
+      // Mock data for now - these will be replaced with backend API calls
+      const socialPostsFromFirebase: any[] = [];
+      const blogPostsFromFirebase: any[] = [];
+      const blogSchedules: any[] = [];
+      const socialScheduledPosts: any[] = [];
 
       console.log('Dashboard data fetched:', {
         bestKeywords: bestKeywords.length,

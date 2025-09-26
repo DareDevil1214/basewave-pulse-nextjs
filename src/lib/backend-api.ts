@@ -71,7 +71,7 @@ export const fetchKeywordsFromBackend = async (type: string = 'all'): Promise<Ba
 /**
  * Fetch portal keywords from backend API
  */
-export const fetchPortalKeywordsFromBackend = async (): Promise<BackendKeyword[]> => {
+export const fetchPortalKeywordsFromBackend = async (portal?: string): Promise<BackendKeyword[]> => {
   try {
     console.log('🔍 Fetching portal keywords via backend API...');
 
@@ -81,7 +81,11 @@ export const fetchPortalKeywordsFromBackend = async (): Promise<BackendKeyword[]
       return [];
     }
 
-    const response = await fetch('/api/business/keywords/portal', {
+    const url = portal 
+      ? `/api/business/portal-keywords?portal=${encodeURIComponent(portal)}`
+      : '/api/business/portal-keywords';
+
+    const response = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -209,4 +213,257 @@ export const convertBackendBlogContentToLegacy = (content: BackendBlogContent[])
     articleId: item.articleId,
     ...item
   }));
+};
+
+/**
+ * Add a new keyword via backend API
+ */
+export const addKeywordToBackend = async (keywordData: any): Promise<any> => {
+  try {
+    console.log('🔍 Adding keyword via backend API...');
+
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      console.error('❌ No authentication token found');
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch('/api/business/keywords', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(keywordData)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to add keyword');
+    }
+
+    const result = await response.json();
+    console.log('✅ Keyword added successfully');
+    return result.data;
+  } catch (error) {
+    console.error('❌ Error adding keyword:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update a keyword via backend API
+ */
+export const updateKeywordInBackend = async (keywordId: string, updateData: any): Promise<any> => {
+  try {
+    console.log('🔍 Updating keyword via backend API...');
+
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      console.error('❌ No authentication token found');
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`/api/business/keywords/${keywordId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updateData)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update keyword');
+    }
+
+    const result = await response.json();
+    console.log('✅ Keyword updated successfully');
+    return result.data;
+  } catch (error) {
+    console.error('❌ Error updating keyword:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a keyword via backend API
+ */
+export const deleteKeywordFromBackend = async (keywordId: string): Promise<any> => {
+  try {
+    console.log('🔍 Deleting keyword via backend API...');
+
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      console.error('❌ No authentication token found');
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`/api/business/keywords/${keywordId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to delete keyword');
+    }
+
+    const result = await response.json();
+    console.log('✅ Keyword deleted successfully');
+    return result.data;
+  } catch (error) {
+    console.error('❌ Error deleting keyword:', error);
+    throw error;
+  }
+};
+
+// ===== BUSINESS OPPORTUNITIES API =====
+
+// Fetch opportunities from backend
+export const fetchOpportunitiesFromBackend = async () => {
+  try {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) throw new Error('No authentication token found');
+
+    const response = await fetch('/api/business/opportunities', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.error('Error fetching opportunities from backend:', error);
+    throw error;
+  }
+};
+
+// Add opportunity to backend
+export const addOpportunityToBackend = async (opportunityData: any) => {
+  try {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) throw new Error('No authentication token found');
+
+    const response = await fetch('/api/business/opportunities', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(opportunityData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error adding opportunity to backend:', error);
+    throw error;
+  }
+};
+
+// ===== BUSINESS PORTAL KEYWORDS API =====
+// Note: fetchPortalKeywordsFromBackend is already defined above (line 74)
+
+// ===== BUSINESS BLOG POSTS API =====
+
+// Fetch blog posts from backend
+export const fetchBlogPostsFromBackend = async () => {
+  try {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) throw new Error('No authentication token found');
+
+    const response = await fetch('/api/business/blog-posts', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.error('Error fetching blog posts from backend:', error);
+    throw error;
+  }
+};
+
+// ===== BUSINESS SOCIAL POSTS API =====
+
+// Fetch social posts from backend
+export const fetchSocialPostsFromBackend = async (type: 'generated' | 'scheduled' | 'published' | 'all' = 'all') => {
+  try {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) throw new Error('No authentication token found');
+
+    const url = type === 'all' 
+      ? '/api/business/social-posts'
+      : `/api/business/social-posts?type=${type}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.error('Error fetching social posts from backend:', error);
+    throw error;
+  }
+};
+
+// ===== TEST DATA API =====
+
+// Create test data for keywords
+export const createTestData = async () => {
+  try {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) throw new Error('No authentication token found');
+
+    const response = await fetch('/api/business/keywords/test-data', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error creating test data:', error);
+    throw error;
+  }
 };

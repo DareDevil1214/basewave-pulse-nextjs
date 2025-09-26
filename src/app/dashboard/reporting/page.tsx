@@ -6,7 +6,8 @@ import { Plus, Trash2, Edit3, Send, Mail, AlertCircle, CheckCircle, Clock } from
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { fetchReportingData, updateReportingEmails, updateLastWebhookTime } from '@/lib/firebase';
+// Note: Reporting will be handled through backend API
+// import { fetchReportingData, updateReportingEmails, updateLastWebhookTime } from '@/lib/firebase';
 import { toast } from 'sonner';
 
 interface EmailData {
@@ -43,7 +44,8 @@ export default function ReportingPage() {
   const loadEmails = async () => {
     try {
       setIsLoading(true);
-      const reportingData = await fetchReportingData();
+      // Mock data for now - will be replaced with backend API call
+      const reportingData = { id: null, emails: [], lastWebhookTime: 0 };
       setEmails(reportingData.emails);
       setLastWebhookTime(reportingData.lastWebhookTime);
     } catch (error) {
@@ -56,7 +58,8 @@ export default function ReportingPage() {
 
   const saveEmailsToFirebase = async (updatedEmails: string[]) => {
     try {
-      await updateReportingEmails(updatedEmails);
+      // Mock implementation - will be replaced with backend API call
+      console.log('Updating reporting emails:', updatedEmails);
       return true;
     } catch (error) {
       console.error('Error saving emails:', error);
@@ -162,7 +165,8 @@ export default function ReportingPage() {
         
         // Save the timestamp to Firebase
         try {
-          await updateLastWebhookTime(now);
+          // Mock implementation - will be replaced with backend API call
+          console.log('Updating last webhook time:', now);
         } catch (firebaseError) {
           console.error('Failed to save webhook time to Firebase:', firebaseError);
           // Don't show error to user as webhook was successful
@@ -184,7 +188,8 @@ export default function ReportingPage() {
 
   const refreshLastWebhookTime = async () => {
     try {
-      const reportingData = await fetchReportingData();
+      // Mock data for now - will be replaced with backend API call
+      const reportingData = { id: null, emails: [], lastWebhookTime: 0 };
       setLastWebhookTime(reportingData.lastWebhookTime);
       toast.success('Last webhook time refreshed');
     } catch (error) {

@@ -1,5 +1,6 @@
-import { db } from './firebase';
-import { collection, getDocs, doc, updateDoc, addDoc, deleteDoc, query, where } from 'firebase/firestore';
+// Note: Firebase dependencies removed - using backend API instead
+// import { db } from './firebase';
+// import { collection, getDocs, doc, updateDoc, addDoc, deleteDoc, query, where } from 'firebase/firestore';
 
 // Interface for Portal Config
 export interface PortalConfig {

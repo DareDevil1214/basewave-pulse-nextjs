@@ -1,6 +1,7 @@
-import { db } from './firebase';
+// Note: Firebase dependencies removed - using backend API instead
+// import { db } from './firebase';
 import { getCurrentBranding } from './branding';
-import { collection, addDoc } from 'firebase/firestore';
+// import { collection, addDoc } from 'firebase/firestore';
 
 export interface GeneratedOpportunity {
   title: string;
@@ -72,36 +73,54 @@ export const generateOpportunityFromKeyword = async (
   }
 };
 
-// Save generated opportunity to Firebase
-export const saveOpportunityToFirebase = async (
+// Save generated opportunity via backend API
+export const saveOpportunityToBackend = async (
   opportunity: GeneratedOpportunity,
   portal: string
 ): Promise<{ success: boolean; message: string; docId?: string }> => {
   try {
-    console.log(`💾 Saving opportunity to Firebase for portal: ${portal}`);
+    console.log(`💾 Saving opportunity via backend API for portal: ${portal}`);
 
-    // Determine the document ID based on portal
-    const documentId = getCurrentBranding().name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-doc-id';
-    
-    // Get a reference to the compBlogContent collection
-    const compBlogContentRef = collection(db, 'compBlogContent');
-    
-    // Create a new document with the opportunity
-    const docRef = await addDoc(compBlogContentRef, {
+    // Prepare opportunity data for backend API
+    const opportunityData = {
       articles: {
         [`opportunity-${Date.now()}`]: opportunity
-      }
+      },
+      portal: portal,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Call backend API to save opportunity
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch('/api/opportunities/generate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(opportunityData)
     });
 
-    console.log('✅ Opportunity saved to Firebase with ID:', docRef.id);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to save opportunity');
+    }
+
+    const result = await response.json();
+    console.log('✅ Opportunity saved via backend API with ID:', result.data?.id);
     
     return {
       success: true,
       message: 'Opportunity generated and saved successfully!',
-      docId: docRef.id
+      docId: result.data?.id
     };
   } catch (error) {
-    console.error('❌ Error saving opportunity to Firebase:', error);
+    console.error('❌ Error saving opportunity via backend API:', error);
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to save opportunity'
@@ -128,8 +147,8 @@ export const generateAndSaveOpportunity = async (
       };
     }
 
-    // Step 2: Save to Firebase
-    const saveResult = await saveOpportunityToFirebase(generationResult.data, portal);
+    // Step 2: Save via backend API
+    const saveResult = await saveOpportunityToBackend(generationResult.data, portal);
 
     return saveResult;
   } catch (error) {

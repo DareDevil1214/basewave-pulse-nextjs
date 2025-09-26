@@ -136,7 +136,7 @@ export function LoginPage() {
               >
                 <div className="relative inline-block">
                   <Image
-                    src="/new-logo.png"
+                    src={getCurrentBranding().logoUrl || "/new-logo.png"}
                     alt={`${getCurrentBranding().name} Logo`}
                     width={256}
                     height={96}

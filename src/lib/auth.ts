@@ -1,13 +1,4 @@
 // Authentication utilities for BaseWave Platform
-import { 
-  signInWithEmailAndPassword, 
-  signOut as firebaseSignOut,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  updateProfile,
-  User as FirebaseUser
-} from 'firebase/auth';
-import { auth } from './firebase';
 
 export interface User {
   username: string;
@@ -16,10 +7,10 @@ export interface User {
   role: string;
   isAuthenticated: boolean;
   permissions: string[];
-  firebaseUser?: FirebaseUser;
   businessId?: string;
   businessName?: string;
   logoUrl?: string;
+  token?: string;
 }
 
 export interface LoginCredentials {
@@ -195,10 +186,14 @@ export const refreshSession = (user: User): void => {
   }
 };
 
-export const signOutFromFirebase = async (): Promise<void> => {
+export const signOut = async (): Promise<void> => {
   try {
-    await firebaseSignOut(auth);
+    // Clear JWT token from localStorage
+    localStorage.removeItem('jwt_token');
+    localStorage.removeItem('user_data');
+    localStorage.removeItem('basewave_session');
+    console.log('✅ User signed out successfully');
   } catch (error) {
-    console.error('Firebase sign out error:', error);
+    console.error('Sign out error:', error);
   }
 };
